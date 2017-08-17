@@ -1,0 +1,6 @@
+framework module IFreePlaySDK {
+  umbrella header "IFreePlaySDK-umbrella.h"
+
+  export *
+  module * { export * }
+}
