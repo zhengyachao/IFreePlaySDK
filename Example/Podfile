@@ -1,0 +1,11 @@
+use_frameworks!
+
+target 'IFreePlaySDK_Example' do
+  pod 'IFreePlaySDK', :path => '../'
+
+  target 'IFreePlaySDK_Tests' do
+    inherit! :search_paths
+
+    
+  end
+end
