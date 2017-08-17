@@ -23,7 +23,7 @@
 		6003F5BC195388D20070C39A /* Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6003F5BB195388D20070C39A /* Tests.m */; };
 		71719F9F1E33DC2100824A3D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 71719F9D1E33DC2100824A3D /* LaunchScreen.storyboard */; };
 		873B8AEB1B1F5CCA007FD442 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 873B8AEA1B1F5CCA007FD442 /* Main.storyboard */; };
-		B033D9BCCA943B8B788F8773 /* Pods_IFreePlaySDK_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B1DC6AFD4A3EB6E6ED9C1E4B /* Pods_IFreePlaySDK_Example.framework */; };
+		B033D9BCCA943B8B788F8773 /* Pods_IFreePlaySDK_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B1DC6AFD4A3EB6E6ED9C1E4B /* Pods_IFreePlaySDK_Example.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -41,7 +41,6 @@
 		19D402ED82AC6E4308B4BFC3 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		23A5AF2FBB3B5F2977C8689E /* Pods-IFreePlaySDK_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-IFreePlaySDK_Example.debug.xcconfig"; path = "Pods/Target Support Files/Pods-IFreePlaySDK_Example/Pods-IFreePlaySDK_Example.debug.xcconfig"; sourceTree = "<group>"; };
 		3754980A3DF3A1FCC14B8D9E /* Pods-IFreePlaySDK_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-IFreePlaySDK_Tests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-IFreePlaySDK_Tests/Pods-IFreePlaySDK_Tests.debug.xcconfig"; sourceTree = "<group>"; };
-		421F16D23D7EBD094CF9E4B9 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		5BC0B16CEC2F9A7EAD5754BD /* IFreePlaySDK.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = IFreePlaySDK.podspec; path = ../IFreePlaySDK.podspec; sourceTree = "<group>"; };
 		6003F58A195388D20070C39A /* IFreePlaySDK_Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = IFreePlaySDK_Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6003F58D195388D20070C39A /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -190,7 +189,6 @@
 			isa = PBXGroup;
 			children = (
 				5BC0B16CEC2F9A7EAD5754BD /* IFreePlaySDK.podspec */,
-				421F16D23D7EBD094CF9E4B9 /* README.md */,
 				19D402ED82AC6E4308B4BFC3 /* LICENSE */,
 			);
 			name = "Podspec Metadata";
@@ -487,7 +485,12 @@
 				ENABLE_TESTABILITY = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$PODS_CONFIGURATION_BUILD_DIR/Bolts\"",
+					"\"$PODS_CONFIGURATION_BUILD_DIR/FBSDKCoreKit\"",
+					"\"$PODS_CONFIGURATION_BUILD_DIR/FBSDKShareKit\"",
+					"\"$PODS_CONFIGURATION_BUILD_DIR/FBSDKLoginKit\"",
 					"\"$PODS_CONFIGURATION_BUILD_DIR/LineSDK\"",
+					"\"$PODS_CONFIGURATION_BUILD_DIR/IFreePlaySDK\"",
 				);
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -531,7 +534,12 @@
 				ENABLE_NS_ASSERTIONS = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$PODS_CONFIGURATION_BUILD_DIR/Bolts\"",
+					"\"$PODS_CONFIGURATION_BUILD_DIR/FBSDKCoreKit\"",
+					"\"$PODS_CONFIGURATION_BUILD_DIR/FBSDKShareKit\"",
+					"\"$PODS_CONFIGURATION_BUILD_DIR/FBSDKLoginKit\"",
 					"\"$PODS_CONFIGURATION_BUILD_DIR/LineSDK\"",
+					"\"$PODS_CONFIGURATION_BUILD_DIR/IFreePlaySDK\"",
 				);
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -559,13 +567,14 @@
 					"\"$PODS_CONFIGURATION_BUILD_DIR/FBSDKCoreKit\"",
 					"\"$PODS_CONFIGURATION_BUILD_DIR/FBSDKLoginKit\"",
 					"\"$PODS_CONFIGURATION_BUILD_DIR/FBSDKShareKit\"",
-					"\"$PODS_CONFIGURATION_BUILD_DIR/IFreePlaySDK\"",
 					"\"$PODS_CONFIGURATION_BUILD_DIR/LineSDK\"",
+					"\"$PODS_CONFIGURATION_BUILD_DIR/IFreePlaySDK\"",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "IFreePlaySDK/IFreePlaySDK-Prefix.pch";
 				INFOPLIST_FILE = "IFreePlaySDK/IFreePlaySDK-Info.plist";
 				MODULE_NAME = ExampleApp;
+				OTHER_LDFLAGS = "-all_load";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.demo.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
@@ -584,13 +593,14 @@
 					"\"$PODS_CONFIGURATION_BUILD_DIR/FBSDKCoreKit\"",
 					"\"$PODS_CONFIGURATION_BUILD_DIR/FBSDKLoginKit\"",
 					"\"$PODS_CONFIGURATION_BUILD_DIR/FBSDKShareKit\"",
-					"\"$PODS_CONFIGURATION_BUILD_DIR/IFreePlaySDK\"",
 					"\"$PODS_CONFIGURATION_BUILD_DIR/LineSDK\"",
+					"\"$PODS_CONFIGURATION_BUILD_DIR/IFreePlaySDK\"",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "IFreePlaySDK/IFreePlaySDK-Prefix.pch";
 				INFOPLIST_FILE = "IFreePlaySDK/IFreePlaySDK-Info.plist";
 				MODULE_NAME = ExampleApp;
+				OTHER_LDFLAGS = "-all_load";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.demo.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;

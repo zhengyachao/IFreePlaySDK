@@ -21,7 +21,8 @@ TODO: 对Facebook登录和line登录以及微信登录做一次封装
 
   s.source_files = 'IFreePlaySDK/Classes/**/*.{h,m}'
 
-  s.public_header_files = 'IFreePlaySDK/Classes/**/*.h'
+  s.public_header_files = 'IFreePlaySDK/Classes/**/*.h','IFreePlaySDK/Classes/LineSDK.framework/**/*.h'
+
   s.vendored_libraries  = 'IFreePlaySDK/Classes/libWeChatSDK.a'
   s.vendored_frameworks = 'IFreePlaySDK/Classes/LineSDK.framework'
   s.libraries = 'c++', 'sqlite3', 'z'
