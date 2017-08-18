@@ -1,0 +1,1 @@
+../../../../../../IFreePlaySDK/Classes/LineSDK.framework/Headers/NSError+LineSDK.h

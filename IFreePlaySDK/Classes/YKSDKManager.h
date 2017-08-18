@@ -13,9 +13,11 @@ typedef void (^YKSDKManagerRequestSuccess)(NSDictionary *data);
 typedef void (^YKSDKManagerRequestFailed)(NSError *error);
 
 /* 根据微信返回的code获取accessToken和openId 调用接口 */
-#define kWechatGetToken     @"https://api.weixin.qq.com/sns/oauth2/access_token?appid=%@&secret=%@&code=%@&grant_type=authorization_code"
-
-#define kWechatGetUserInfo  @"https://api.weixin.qq.com/sns/userinfo?access_token=%@&openid=%@"
+#define kWechatGetTokenUrl     @"https://api.weixin.qq.com/sns/oauth2/access_token?appid=%@&secret=%@&code=%@&grant_type=authorization_code"
+/* 根据微信返回的accessToken和openId获取用户个人信息 */
+#define kWechatGetUserInfoUrl  @"https://api.weixin.qq.com/sns/userinfo?access_token=%@&openid=%@"
+/* 本地服务器地址 */
+#define kLocalHostUrl  @"http://172.100.8.66:8080/auth/login?"
 
 @interface YKSDKManager : NSObject
 

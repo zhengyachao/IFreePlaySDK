@@ -8,7 +8,7 @@
 
 #import "WXApi.h"
 #import "YKSDKManager.h"
-#import <LineSDK.h>
+#import "LineSDK.h"
 #import "YKRequestNetwork.h"
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
 #import <FBSDKLoginKit/FBSDKLoginKit.h>
@@ -88,22 +88,17 @@
              if ([FBSDKAccessToken currentAccessToken])
              {
                  FBSDKGraphRequest *request = [[FBSDKGraphRequest alloc] initWithGraphPath:@"me?fields=id,name" parameters:nil];
-                 [request startWithCompletionHandler:^(FBSDKGraphRequestConnection *connection, id result, NSError *error)
-                  {
-                      [[NSUserDefaults standardUserDefaults] setObject:result forKey:@"FBresult"];
-                      NSDictionary *FBresult = [[NSUserDefaults standardUserDefaults] objectForKey:@"FBresult"];
-                      NSLog(@"FBresult = %@",FBresult);
-                      NSString *userID = result[@"id"];
-                      
-                      if (!error && [[FBSDKAccessToken currentAccessToken].userID isEqualToString:userID])
-                      {
-                          NSString *userID = result[@"id"];
-                          NSString *userName = result[@"name"];
+                 [request startWithCompletionHandler:^(FBSDKGraphRequestConnection *connection, id result, NSError *error) {
+                     NSString *userID = result[@"id"];
+                     
+                     if (!error && [[FBSDKAccessToken currentAccessToken].userID isEqualToString:userID])
+                     {
+                         NSString *userID = result[@"id"];
+                         NSString *userName = result[@"name"];
                         
-                          NSLog(@"userId = %@, userName = %@",userID,userName);
-                          [self postServiceName:userName Openid:userID];
-                      }
-                  }];
+                         [self postServiceName:userName Openid:userID];
+                     }
+                 }];
              }
          }
      }];
@@ -142,19 +137,9 @@
     }
     else
     {
-        NSString * accessToken = credential.accessToken.accessToken;
         NSString * userID = profile.userID;
         NSString * displayName = profile.displayName;
-        NSString * statusMessage = profile.statusMessage;
-        NSURL * pictureURL = profile.pictureURL;
-        
-        NSString * pictureUrlString;
-        
-        // If the user does not have a profile picture set, pictureURL will be nil
-        if (pictureURL) {
-            pictureUrlString = profile.pictureURL.absoluteString;
-        }
-        NSLog(@"%@ %@ %@ %@ %@",accessToken,userID,displayName,statusMessage,pictureURL);
+       /* 调用本地服务器接口获取token */
         [self postServiceName:displayName Openid:userID];
     }
 }
@@ -183,16 +168,15 @@
         SendAuthResp *aresp = (SendAuthResp *)resp;
         if (aresp.errCode== 0)
         {
-            NSLog(@"code %@",aresp.code);
-            
+            /* 根据微信返回的code获取accesstoken和opened */
             [self getWechatAccessTokenWithCode:aresp.code];
         }
     }
 }
-
+/* 根据微信回应拿到的code去获取accessToken和openId */
 - (void)getWechatAccessTokenWithCode:(NSString *)code
 {
-    NSString *url =[NSString stringWithFormat:kWechatGetToken,_wxAppId,_wxAppSecret,code];
+    NSString *url =[NSString stringWithFormat:kWechatGetTokenUrl,_wxAppId,_wxAppSecret,code];
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         NSURL *zoneUrl = [NSURL URLWithString:url];
@@ -213,10 +197,10 @@
         });
     });
 }
-
+/* 根据获取到的openId和accessToken获取用户个人信息 */
 - (void)getWechatUserInfoWithAccessToken:(NSString *)accessToken openId:(NSString *)openId
 {
-    NSString *url =[NSString stringWithFormat:kWechatGetUserInfo,accessToken,openId];
+    NSString *url =[NSString stringWithFormat:kWechatGetUserInfoUrl,accessToken,openId];
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         NSURL *zoneUrl = [NSURL URLWithString:url];
@@ -228,16 +212,9 @@
             {
                 NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:data
                                                                     options:NSJSONReadingMutableContainers error:nil];
-                
-                
                 NSString *openId = [dic objectForKey:@"openid"];
                 NSString *memNickName = [dic objectForKey:@"nickname"];
-                NSString *memSex = [dic objectForKey:@"sex"];
-                
-                NSLog(@"%@",dic);
-                
-                NSLog(@"openId = %@, memNickName = %@, memSex = %@",openId,memNickName,memSex);
-                
+                /* 调用本地服务器接口获取token */
                 [self postServiceName:memNickName Openid:openId];
             }
         });
@@ -294,18 +271,18 @@
     {
         params = @{@"gameId":_gameId,
                    @"type":_type,
-                   @"wechatId":openId,
+                   @"facebookId":openId,
                    @"name":name};
     } else if ([_type isEqualToString:@"LINE"])
     {
         params = @{@"gameId":_gameId,
                    @"type":_type,
-                   @"wechatId":openId,
+                   @"lineId":openId,
                    @"name":name};
     }
     
     
-    [YKRequestNetwork postRequestByServiceUrl:@"http://172.100.8.66:8080/auth/login?"
+    [YKRequestNetwork postRequestByServiceUrl:kLocalHostUrl
                                    parameters:params success:^(NSDictionary *data)
      {
          self.successBlock(data);

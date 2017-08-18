@@ -1,0 +1,1 @@
+../../../../../IFreePlaySDK/Classes/YKSDKManager.h
