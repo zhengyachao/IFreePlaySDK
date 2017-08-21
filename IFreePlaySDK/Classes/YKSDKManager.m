@@ -65,11 +65,14 @@
                 success:(void (^)(NSDictionary *))successBlock
                 failure:(void (^)(NSError *))failureBlock
 {
+    self.successBlock = successBlock;
+    self.failureBlock = failureBlock;
     _gameId = gameId;
     _type = type;
     
     FBSDKLoginManager *login = [[FBSDKLoginManager alloc] init];
     [login logOut];
+    login.loginBehavior = FBSDKLoginBehaviorNative;
     [login logInWithReadPermissions: @[@"public_profile",@"email",@"user_about_me"]
                  fromViewController:vc
                             handler:^(FBSDKLoginManagerLoginResult *result, NSError *error)
