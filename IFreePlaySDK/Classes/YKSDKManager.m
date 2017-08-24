@@ -119,7 +119,13 @@
     _type = type;
     
     [LineSDKLogin sharedInstance].delegate = self;
-    [[LineSDKLogin sharedInstance] startLogin];
+    if ([[LineSDKLogin sharedInstance] canLoginWithLineApp])
+    {
+        [[LineSDKLogin sharedInstance] startLogin];
+    } else
+    {
+        [[LineSDKLogin sharedInstance] startWebLoginWithSafariViewController:YES];
+    }
 }
 
 /* 唤起Line */
