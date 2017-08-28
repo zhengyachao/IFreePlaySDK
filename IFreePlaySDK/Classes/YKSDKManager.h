@@ -6,8 +6,13 @@
 //  Copyright © 2017年 ifreeplay. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+#import "WXApi.h"
+#import "LineSDK.h"
+#import "YKRequestNetwork.h"
 #import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
+#import <FBSDKCoreKit/FBSDKCoreKit.h>
+#import <FBSDKLoginKit/FBSDKLoginKit.h>
 
 typedef void (^YKSDKManagerRequestSuccess)(NSDictionary *data);
 typedef void (^YKSDKManagerRequestFailed)(NSError *error);

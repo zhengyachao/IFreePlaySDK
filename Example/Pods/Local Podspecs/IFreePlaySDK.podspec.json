@@ -1,6 +1,6 @@
 {
   "name": "IFreePlaySDK",
-  "version": "0.1.0",
+  "version": "1.0.3",
   "summary": "集成facebook登录，line登录，微信登录，并打包成静态库",
   "description": "TODO: 对Facebook登录和line登录以及微信登录做一次封装",
   "homepage": "https://github.com/zhengyachao/IFreePlaySDK",
@@ -13,13 +13,13 @@
   },
   "source": {
     "git": "https://github.com/zhengyachao/IFreePlaySDK.git",
-    "tag": "0.1.0"
+    "tag": "1.0.3"
   },
   "platforms": {
     "ios": "8.0"
   },
   "requires_arc": true,
-  "source_files": "IFreePlaySDK/Classes/**/*",
+  "source_files": "IFreePlaySDK/Classes/**/*.{h,m}",
   "public_header_files": "IFreePlaySDK/Classes/**/*.h",
   "vendored_libraries": "IFreePlaySDK/Classes/libWeChatSDK.a",
   "vendored_frameworks": "IFreePlaySDK/Classes/LineSDK.framework",
@@ -46,8 +46,5 @@
     "FBSDKShareKit": [
 
     ]
-  },
-  "pod_target_xcconfig": {
-    "OTHER_LDFLAGS": "-all_load"
   }
 }

@@ -1,1 +1,0 @@
-../../../../../../IFreePlaySDK/Classes/LineSDK.framework/Headers/LineSDKRequestProtocol.h
