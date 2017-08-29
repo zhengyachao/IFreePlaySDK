@@ -1,7 +1,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'IFreePlaySDK'
-  s.version          = '1.0.6'
+  s.version          = '1.0.7'
   s.summary          = '集成facebook登录，line登录，微信登录，并打包成静态库'
 
   s.description      = <<-DESC
