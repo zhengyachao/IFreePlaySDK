@@ -1,7 +1,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'IFreePlaySDK'
-  s.version          = '1.0.7'
+  s.version          = '1.0.6'
   s.summary          = '集成facebook登录，line登录，微信登录，并打包成静态库'
 
   s.description      = <<-DESC
@@ -17,7 +17,7 @@ TODO: 对Facebook登录和line登录以及微信登录做一次封装
   s.platform     = :ios, '8.0'
   s.requires_arc = true
 
-s.source_files = 'IFreePlaySDK/Classes/**/*.{h,m}'
+  s.source_files = 'IFreePlaySDK/Classes/**/*.{h,m}'
 
   s.public_header_files = 'IFreePlaySDK/Classes/**/*.h','IFreePlaySDK/Classes/LineSDK.framework/**/*.h'
 
