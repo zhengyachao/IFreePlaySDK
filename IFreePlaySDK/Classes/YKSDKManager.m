@@ -158,7 +158,7 @@
 /* WXApi的成员函数，向微信终端程序注册第三方应用 */
 - (void)registerAppForWechat:(NSString *)wxAppid
 {
-    [WXApi registerApp:wxAppid];
+    [WXApi registerApp:wxAppid enableMTA:NO];
 }
 
 /* 处理微信通过URL启动App时传递的数据 */
