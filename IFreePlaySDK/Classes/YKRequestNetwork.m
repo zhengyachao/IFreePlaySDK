@@ -27,20 +27,23 @@
     [request setValue:@"application/json" forHTTPHeaderField:@"content-Type"];
     [request setValue:@"application/json;charset=utf-8" forHTTPHeaderField:@"Accept"];
     
-    //data的字典形式转化为data
+    //dic的params字典形式转化为jsonData
     NSData *jsonData = [NSJSONSerialization dataWithJSONObject:dic options:NSJSONWritingPrettyPrinted error:nil];
     //设置请求体
     [request setHTTPBody:jsonData];
     
     NSURLSessionDataTask * dataTask =[session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-        if (error == nil) {
+        if (error == nil)
+        {
             NSDictionary *responseObject = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
             success(responseObject);
-        }else{
+        }else
+        {
             NSLog(@"%@",error);
             failure(error);
         }
     }];
+    
     [dataTask resume];
 }
 
@@ -61,7 +64,7 @@
     [request setValue:@"application/json" forHTTPHeaderField:@"content-Type"];
     [request setValue:@"application/json;charset=utf-8" forHTTPHeaderField:@"Accept"];
     
-    //data的字典形式转化为data
+    //dic的params字典形式转化为jsonData
     NSData *jsonData = [NSJSONSerialization dataWithJSONObject:dic options:NSJSONWritingPrettyPrinted error:nil];
     //设置请求体
     [request setHTTPBody:jsonData];
