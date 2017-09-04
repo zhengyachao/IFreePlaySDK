@@ -72,9 +72,25 @@
     NSURLSessionDataTask * dataTask =[session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         if (error == nil) {
             NSDictionary *responseObject = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
-            NSLog(@"%@",responseObject);
+            NSString *code = responseObject[@"code"];
+            NSDictionary *data = responseObject[@"data"];
             
-            success(responseObject);
+            switch ([code intValue])
+            {
+                case 0:
+                    success(data);
+                    break;
+                case 10001:
+                {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        
+                        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"提示" message:@"参数非法" delegate:self cancelButtonTitle:nil otherButtonTitles:@"确定",nil];
+                        [alert show];
+                    });
+                }
+                default:
+                    break;
+            }
         }else
         {
             NSLog(@"%@",error);

@@ -14,18 +14,11 @@
 typedef void (^YKSDKManagerRequestSuccess)(NSDictionary *data);
 typedef void (^YKSDKManagerRequestFailed)(NSError *error);
 
-/* 根据微信返回的code获取accessToken和openId 调用接口 */
-#define kWechatGetTokenUrl     @"https://api.weixin.qq.com/sns/oauth2/access_token?appid=%@&secret=%@&code=%@&grant_type=authorization_code"
-/* 根据微信返回的accessToken和openId获取用户个人信息 */
-#define kWechatGetUserInfoUrl  @"https://api.weixin.qq.com/sns/userinfo?access_token=%@&openid=%@"
-/* 本地服务器地址 */
-#define kLocalHostUrl  @"http://172.100.8.66:8080/auth/login?"
-
 @interface YKSDKManager : NSObject
 
 + (instancetype)shareManager;
 
-#pragma mark -- FaceBook登录
+#pragma mark -- FaceBook登录 --
 /* 初始化Facebook */
 - (void)initFaceBookSDKForApplication:(UIApplication *)application
         didFinishLaunchingWithOptions:(NSDictionary *)launchOptions;
@@ -45,7 +38,7 @@ typedef void (^YKSDKManagerRequestFailed)(NSError *error);
                 success:(void (^)(NSDictionary *))successBlock
                 failure:(void (^)(NSError *))failureBlock;
 
-#pragma mark -- Line登录
+#pragma mark -- Line登录 --
 /* 登录Line */
 - (void)startLoginToLineGameId:(NSString *)gameId
                           Type:(NSString *)type
@@ -54,7 +47,7 @@ typedef void (^YKSDKManagerRequestFailed)(NSError *error);
 /* 唤起Line */
 - (BOOL)handleOpenURL:(NSURL *)url;
 
-#pragma mark -- 微信登录
+#pragma mark -- 微信登录&支付 --
 /* WXApi的成员函数，向微信终端程序注册第三方应用 */
 - (void)registerAppForWechat:(NSString *)wxAppid;
 
@@ -69,6 +62,7 @@ typedef void (^YKSDKManagerRequestFailed)(NSError *error);
                        Appsecret:(NSString *)appSecret
                          success:(void (^)(NSDictionary *))successBlock
                          failure:(void (^)(NSError *))failureBlock;
-
+/* 发起微信支付 */
+- (void)launchWechatPat;
 
 @end

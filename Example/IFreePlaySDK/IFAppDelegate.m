@@ -7,6 +7,7 @@
 //
 
 #import "IFAppDelegate.h"
+#import <IFreePlaySDK/YKSDKManager.h>
 
 @implementation IFAppDelegate
 

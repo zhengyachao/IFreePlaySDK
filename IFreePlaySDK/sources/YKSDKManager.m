@@ -8,11 +8,26 @@
 
 
 #import "WXApi.h"
-#import "LineSDK.h"
-#import "YKRequestNetwork.h"
+#import <LineSDK/LineSDK.h>
 #import "YKSDKManager.h"
+#import "YKUtilTools.h"
+#import "YKRequestNetwork.h"
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
 #import <FBSDKLoginKit/FBSDKLoginKit.h>
+
+/* 根据微信返回的code获取accessToken和openId 调用接口 */
+#define kWechatGetTokenUrl     @"https://api.weixin.qq.com/sns/oauth2/access_token?appid=%@&secret=%@&code=%@&grant_type=authorization_code"
+
+/* 根据微信返回的accessToken和openId获取用户个人信息 */
+#define kWechatGetUserInfoUrl  @"https://api.weixin.qq.com/sns/userinfo?access_token=%@&openid=%@"
+
+/* 本地服务器登录接口 */
+#define kLocalHostUrl                 @"http://172.100.8.66:8080/auth/login?"
+
+/* 本地服务器微信支付获取商品订单接口 */
+#define kLocalHostGetOrderUrl         @"http://172.100.8.66:8080/order"
+
+#define kLocalHostWxPaymentInfo       @"http://172.100.9.96:8080/payment/wechat"
 
 @interface YKSDKManager ()<LineSDKLoginDelegate,WXApiDelegate>
 {
@@ -267,6 +282,52 @@
     [vc presentViewController:alert animated:YES completion:nil];
 }
 
+/* 发起微信支付 */
+- (void)launchWechatPat
+{
+    
+    NSDictionary *params = @{@"gameId":@"1",
+                             @"productId":@"1",
+                             @"productName":@"Game props",
+                             @"playerId":@"121212121",
+                             @"status":@"OPEN",
+                             @"price":@"1",
+                             @"totalPrice":@"1",
+                             @"dealPrice":@"1",
+                             @"spbillCreateIp":[YKUtilTools getIPAddress:YES]
+                             };
+    [YKRequestNetwork postRequestByServiceUrl:@"http://172.100.9.96:8080/order" parameters:params success:^(NSDictionary *data) {
+        NSLog(@"success request");
+        NSString *url = [NSString stringWithFormat:@"http://172.100.9.96:8080/payment/wechat/%@",data[@"orderId"]];
+        NSString *ordercreatetime = [data objectForKey:@"createDateTime"];
+        [YKRequestNetwork postRequestByServiceUrl:url parameters:@{} success:^(NSDictionary *data) {
+            NSLog(@"%@",data);
+            //调起微信支付
+            PayReq* req             = [[PayReq alloc] init];
+            req.openID              = [data objectForKey:@"appid"];
+            req.partnerId           = [data objectForKey:@"mch_id"];
+            req.prepayId            = [data objectForKey:@"prepay_id"];
+            req.nonceStr            = [data objectForKey:@"nonce_str"];
+            req.timeStamp           = [ordercreatetime intValue];
+            req.package             = @"Sign=WXPay";
+            NSString *newSign = [YKUtilTools createMD5SingForPay:req.openID partnerid:req.partnerId  prepayid:req.prepayId package:req.package noncestr:req.nonceStr timestamp:req.timeStamp];
+            req.sign                = newSign;
+            [WXApi sendReq:req];
+            
+        } failure:^(NSError *error) {
+            
+        }];
+        
+        
+        
+    } failure:^(NSError *error) {
+        NSLog(@"failure request");
+    }];
+}
+
+
+#pragma mark -- 网络请求
+/* 三方登录相关的网络请求*/
 - (void)postServiceName:(NSString *)name Openid:(NSString *)openId
 {
     NSDictionary *params;
@@ -300,6 +361,48 @@
      {
          self.failureBlock(error);
      }];
+}
+
+- (void)getWechatPayOrderForGoods
+{
+    NSDictionary *params = @{@"gameId":@"1",
+                             @"productId":@"1",
+                             @"productName":@"Game props",
+                             @"playerId":@"121212121",
+                             @"status":@"OPEN",
+                             @"price":@"1",
+                             @"totalPrice":@"1",
+                             @"dealPrice":@"1",
+                             @"spbillCreateIp":[YKUtilTools getIPAddress:YES]
+                             };
+    [YKRequestNetwork postRequestByServiceUrl:kLocalHostGetOrderUrl parameters:params success:^(NSDictionary *data) {
+        
+        [self getWechatDateInfo:data];
+    } failure:^(NSError *error) {
+        NSLog(@"failure request  %@", error);
+    }];
+}
+
+- (void)getWechatDateInfo:(NSDictionary *)data
+{
+    NSString *url = [NSString stringWithFormat:@"%@/%@",kLocalHostWxPaymentInfo,data[@"orderId"]];
+    NSString *ordercreatetime = [data objectForKey:@"createDateTime"];
+    [YKRequestNetwork postRequestByServiceUrl:url parameters:@{} success:^(NSDictionary *data) {
+        NSLog(@"%@",data);
+        //调起微信支付
+        PayReq* req             = [[PayReq alloc] init];
+        req.openID              = [data objectForKey:@"appid"];
+        req.partnerId           = [data objectForKey:@"mch_id"];
+        req.prepayId            = [data objectForKey:@"prepay_id"];
+        req.nonceStr            = [data objectForKey:@"nonce_str"];
+        req.timeStamp           = [ordercreatetime intValue];
+        req.package             = @"Sign=WXPay";
+        NSString *newSign = [YKUtilTools createMD5SingForPay:req.openID partnerid:req.partnerId  prepayid:req.prepayId package:req.package noncestr:req.nonceStr timestamp:req.timeStamp];
+        req.sign                = newSign;
+        [WXApi sendReq:req];
+    } failure:^(NSError *error) {
+        NSLog(@"failure request %@", error);
+    }];
 }
 
 @end
