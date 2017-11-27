@@ -1,20 +1,38 @@
 PODS:
+  - AFNetworking (3.1.0):
+    - AFNetworking/NSURLSession (= 3.1.0)
+    - AFNetworking/Reachability (= 3.1.0)
+    - AFNetworking/Security (= 3.1.0)
+    - AFNetworking/Serialization (= 3.1.0)
+    - AFNetworking/UIKit (= 3.1.0)
+  - AFNetworking/NSURLSession (3.1.0):
+    - AFNetworking/Reachability
+    - AFNetworking/Security
+    - AFNetworking/Serialization
+  - AFNetworking/Reachability (3.1.0)
+  - AFNetworking/Security (3.1.0)
+  - AFNetworking/Serialization (3.1.0)
+  - AFNetworking/UIKit (3.1.0):
+    - AFNetworking/NSURLSession
   - Bolts (1.8.4):
     - Bolts/AppLinks (= 1.8.4)
     - Bolts/Tasks (= 1.8.4)
   - Bolts/AppLinks (1.8.4):
     - Bolts/Tasks
   - Bolts/Tasks (1.8.4)
-  - FBSDKCoreKit (4.25.0):
+  - FBSDKCoreKit (4.26.0):
     - Bolts (~> 1.7)
-  - FBSDKLoginKit (4.25.0):
+  - FBSDKLoginKit (4.26.0):
     - FBSDKCoreKit
-  - FBSDKShareKit (4.25.0):
+  - FBSDKShareKit (4.26.0):
     - FBSDKCoreKit
-  - IFreePlaySDK (1.0.8):
+  - IFreePlaySDK (1.1.1):
     - FBSDKCoreKit
     - FBSDKLoginKit
     - FBSDKShareKit
+    - YTKNetwork
+  - YTKNetwork (2.0.4):
+    - AFNetworking (~> 3.0)
 
 DEPENDENCIES:
   - IFreePlaySDK (from `../`)
@@ -24,11 +42,13 @@ EXTERNAL SOURCES:
     :path: ../
 
 SPEC CHECKSUMS:
+  AFNetworking: 5e0e199f73d8626b11e79750991f5d173d1f8b67
   Bolts: 8a7995239dbe724f9cba2248b766d48b7ebdd322
-  FBSDKCoreKit: 53e3f4bfb64e80c5f229dd30ae33ff57fbbbd2d1
-  FBSDKLoginKit: f628c09684dae9c17f071cf90b014e886f5093ea
-  FBSDKShareKit: aea699d3cac749af08e360f4e949b82ffa8813f5
-  IFreePlaySDK: 48ef2e24cd3851765f56826c651c297c8922b7e2
+  FBSDKCoreKit: c8b8582311ec11b145451d8b9717dc6cc2ae5a76
+  FBSDKLoginKit: f3f03b94c21eb834af243c0a881d48641f47ca60
+  FBSDKShareKit: 320712d8293fde6392872c91eb80ef0da5d73cc3
+  IFreePlaySDK: e832f6ed183628a22f29d213d184a22b0dd982ce
+  YTKNetwork: df8a7a5597bda1664a4efaa7ef871a818a887fe0
 
 PODFILE CHECKSUM: 8b631f6a1b7f14d266567608e66e267ff7fa4b74
 

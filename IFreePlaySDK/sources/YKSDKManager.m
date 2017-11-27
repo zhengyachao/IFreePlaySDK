@@ -8,26 +8,13 @@
 
 
 #import "WXApi.h"
-#import <LineSDK/LineSDK.h>
-#import "YKSDKManager.h"
 #import "YKUtilTools.h"
-#import "YKRequestNetwork.h"
+#import "YKSDKManager.h"
+#import "YKUtilsMacro.h"
+#import "YKLoginRequest.h"
+#import <LineSDK/LineSDK.h>
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
 #import <FBSDKLoginKit/FBSDKLoginKit.h>
-
-/* 根据微信返回的code获取accessToken和openId 调用接口 */
-#define kWechatGetTokenUrl     @"https://api.weixin.qq.com/sns/oauth2/access_token?appid=%@&secret=%@&code=%@&grant_type=authorization_code"
-
-/* 根据微信返回的accessToken和openId获取用户个人信息 */
-#define kWechatGetUserInfoUrl  @"https://api.weixin.qq.com/sns/userinfo?access_token=%@&openid=%@"
-
-/* 本地服务器登录接口 */
-#define kLocalHostUrl                 @"http://172.100.8.66:8080/auth/login?"
-
-/* 本地服务器微信支付获取商品订单接口 */
-#define kLocalHostGetOrderUrl         @"http://172.100.8.66:8080/order"
-
-#define kLocalHostWxPaymentInfo       @"http://172.100.9.96:8080/payment/wechat"
 
 @interface YKSDKManager ()<LineSDKLoginDelegate,WXApiDelegate>
 {
@@ -56,13 +43,14 @@
 
 #pragma mark -- FaceBook登录相关
 /* 初始化facebook */
-- (void)initFaceBookSDKForApplication:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
-{
+- (void)initFaceBookSDKForApplication:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    
     [[FBSDKApplicationDelegate sharedInstance] application:application
                              didFinishLaunchingWithOptions:launchOptions];
 }
 
 + (void)activateApp {
+    
     [FBSDKAppEvents activateApp];
 }
 
@@ -81,10 +69,10 @@
                 success:(void (^)(NSDictionary *))successBlock
                 failure:(void (^)(NSError *))failureBlock
 {
-    self.successBlock = successBlock;
-    self.failureBlock = failureBlock;
     _gameId = gameId;
     _type = type;
+    self.successBlock = successBlock;
+    self.failureBlock = failureBlock;
     
     FBSDKLoginManager *login = [[FBSDKLoginManager alloc] init];
     [login logOut];
@@ -107,17 +95,19 @@
              if ([FBSDKAccessToken currentAccessToken])
              {
                  FBSDKGraphRequest *request = [[FBSDKGraphRequest alloc] initWithGraphPath:@"me?fields=id,name" parameters:nil];
-                 [request startWithCompletionHandler:^(FBSDKGraphRequestConnection *connection, id result, NSError *error) {
-                     NSString *userID = result[@"id"];
-                     
-                     if (!error && [[FBSDKAccessToken currentAccessToken].userID isEqualToString:userID])
-                     {
-                         NSString *userID = result[@"id"];
-                         NSString *userName = result[@"name"];
-                        
-                         [self postServiceName:userName Openid:userID];
-                     }
-                 }];
+                 [request startWithCompletionHandler:^(FBSDKGraphRequestConnection *connection, id result, NSError *error)
+                  {
+                      NSString *userID = result[@"id"];
+                      
+                      if (!error && [[FBSDKAccessToken currentAccessToken].userID isEqualToString:userID])
+                      {
+                          NSString *userID = result[@"id"];
+                          NSString *userName = result[@"name"];
+                          
+                          NSLog(@"userId = %@, userName = %@",userID,userName);
+                          [self postServiceName:userName Openid:userID];
+                      }
+                  }];
              }
          }
      }];
@@ -134,7 +124,6 @@
     _gameId = gameId;
     _type = type;
     
-    [LineSDKLogin sharedInstance].delegate = self;
     if ([[LineSDKLogin sharedInstance] canLoginWithLineApp])
     {
         [[LineSDKLogin sharedInstance] startLogin];
@@ -142,6 +131,7 @@
     {
         [[LineSDKLogin sharedInstance] startWebLoginWithSafariViewController:YES];
     }
+    [LineSDKLogin sharedInstance].delegate = self;
 }
 
 /* 唤起Line */
@@ -156,15 +146,12 @@
          profile:(nullable LineSDKProfile *)profile
            error:(nullable NSError *)error
 {
-    if (error)
-    {
+    if (error) {
         NSLog(@"Error: %@", error.localizedDescription);
     }
-    else
-    {
+    else {
         NSString * userID = profile.userID;
         NSString * displayName = profile.displayName;
-       /* 调用本地服务器接口获取token */
         [self postServiceName:displayName Openid:userID];
     }
 }
@@ -183,75 +170,54 @@
 }
 
 /* WXApiDelegate方法
- *
  * 发送一个sendReq后，收到微信的回应
  */
 - (void)onResp:(BaseResp *)resp
 {
+    NSString *strTitle;
+    NSString *strMsg = [NSString stringWithFormat:@"errcode:%d", resp.errCode];
+    
     if ([resp isKindOfClass:[SendAuthResp class]]) //判断是否为授权请求，否则与微信支付等功能发生冲突
     {
         SendAuthResp *aresp = (SendAuthResp *)resp;
         if (aresp.errCode== 0)
         {
-            /* 根据微信返回的code获取accesstoken和opened */
             [self getWechatAccessTokenWithCode:aresp.code];
         }
     }
-}
-/* 根据微信回应拿到的code去获取accessToken和openId */
-- (void)getWechatAccessTokenWithCode:(NSString *)code
-{
-    NSString *url =[NSString stringWithFormat:kWechatGetTokenUrl,_wxAppId,_wxAppSecret,code];
     
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NSURL *zoneUrl = [NSURL URLWithString:url];
-        NSString *zoneStr = [NSString stringWithContentsOfURL:zoneUrl encoding:NSUTF8StringEncoding error:nil];
-        NSData *data = [zoneStr dataUsingEncoding:NSUTF8StringEncoding];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            
-            if (data)
+    if ([resp isKindOfClass:[PayResp class]])
+    {
+        //支付返回结果，实际支付结果需要去微信服务器端查询
+        strTitle = [NSString stringWithFormat:@"支付结果"];
+        
+        switch (resp.errCode)
+        {
+            case WXSuccess:
             {
-                NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:data
-                                                                    options:NSJSONReadingMutableContainers error:nil];
-                
-                NSString *accessToken = dic[@"access_token"];
-                NSString *openId = dic[@"openid"];
-                
-                [self getWechatUserInfoWithAccessToken:accessToken openId:openId];
+                strMsg = @"支付结果：成功！";
+                NSLog(@"支付成功－PaySuccess，retcode = %d", resp.errCode);
+                UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"支付成功" message:nil delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+                [alertView show];
             }
-        });
-    });
-}
-/* 根据获取到的openId和accessToken获取用户个人信息 */
-- (void)getWechatUserInfoWithAccessToken:(NSString *)accessToken openId:(NSString *)openId
-{
-    NSString *url =[NSString stringWithFormat:kWechatGetUserInfoUrl,accessToken,openId];
-    
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NSURL *zoneUrl = [NSURL URLWithString:url];
-        NSString *zoneStr = [NSString stringWithContentsOfURL:zoneUrl encoding:NSUTF8StringEncoding error:nil];
-        NSData *data = [zoneStr dataUsingEncoding:NSUTF8StringEncoding];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            
-            if (data)
+                break;
+                
+            default:
             {
-                NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:data
-                                                                    options:NSJSONReadingMutableContainers error:nil];
-                NSString *openId = [dic objectForKey:@"openid"];
-                NSString *memNickName = [dic objectForKey:@"nickname"];
-                /* 调用本地服务器接口获取token */
-                [self postServiceName:memNickName Openid:openId];
+                strMsg = [NSString stringWithFormat:@"支付结果：失败"];
+                NSLog(@"错误，retcode = %d, retstr = %@", resp.errCode, resp.errStr);
+                UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"支付失败" message:nil delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+                [alertView show];
             }
-        });
-    });
+                break;
+        }
+    }
 }
 
 /* 根据微信的name获取用户信息 */
 - (void)loginWechatGetUserInfoVc:(UIViewController *)vc
                           GameId:(NSString *)gameId
                             Type:(NSString *)type
-                           Appid:(NSString *)appid
-                       Appsecret:(NSString *)appSecret
                          success:(void (^)(NSDictionary *))successBlock
                          failure:(void (^)(NSError *))failureBlock
 {
@@ -259,8 +225,6 @@
     self.failureBlock = failureBlock;
     _gameId = gameId;
     _type = type;
-    _wxAppId = appid;
-    _wxAppSecret = appSecret;
     
     if ([WXApi isWXAppInstalled])
     {
@@ -268,8 +232,8 @@
         req.scope = @"snsapi_userinfo";
         req.state = @"App";
         [WXApi sendReq:req];
-    }
-    else {
+    } else
+    {
         [self setupAlertController:vc];
     }
 }
@@ -282,126 +246,159 @@
     [vc presentViewController:alert animated:YES completion:nil];
 }
 
-/* 发起微信支付 */
-- (void)launchWechatPat
+#pragma mark -- 网络请求
+- (void)getWechatAccessTokenWithCode:(NSString *)code
 {
-    
-    NSDictionary *params = @{@"gameId":@"1",
-                             @"productId":@"1",
-                             @"productName":@"Game props",
-                             @"playerId":@"121212121",
-                             @"status":@"OPEN",
-                             @"price":@"1",
-                             @"totalPrice":@"1",
-                             @"dealPrice":@"1",
-                             @"spbillCreateIp":[YKUtilTools getIPAddress:YES]
-                             };
-    [YKRequestNetwork postRequestByServiceUrl:@"http://172.100.9.96:8080/order" parameters:params success:^(NSDictionary *data) {
-        NSLog(@"success request");
-        NSString *url = [NSString stringWithFormat:@"http://172.100.9.96:8080/payment/wechat/%@",data[@"orderId"]];
-        NSString *ordercreatetime = [data objectForKey:@"createDateTime"];
-        [YKRequestNetwork postRequestByServiceUrl:url parameters:@{} success:^(NSDictionary *data) {
-            NSLog(@"%@",data);
-            //调起微信支付
-            PayReq* req             = [[PayReq alloc] init];
-            req.openID              = [data objectForKey:@"appid"];
-            req.partnerId           = [data objectForKey:@"mch_id"];
-            req.prepayId            = [data objectForKey:@"prepay_id"];
-            req.nonceStr            = [data objectForKey:@"nonce_str"];
-            req.timeStamp           = [ordercreatetime intValue];
-            req.package             = @"Sign=WXPay";
-            NSString *newSign = [YKUtilTools createMD5SingForPay:req.openID partnerid:req.partnerId  prepayid:req.prepayId package:req.package noncestr:req.nonceStr timestamp:req.timeStamp];
-            req.sign                = newSign;
-            [WXApi sendReq:req];
+    NSString *url =[NSString stringWithFormat:kWechatGetToken,_wxAppId,_wxAppSecret,code];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        NSURL *zoneUrl = [NSURL URLWithString:url];
+        NSString *zoneStr = [NSString stringWithContentsOfURL:zoneUrl encoding:NSUTF8StringEncoding error:nil];
+        NSData *data = [zoneStr dataUsingEncoding:NSUTF8StringEncoding];
+        dispatch_async(dispatch_get_main_queue(), ^{
             
-        } failure:^(NSError *error) {
-            
-        }];
-        
-        
-        
-    } failure:^(NSError *error) {
-        NSLog(@"failure request");
-    }];
+            if (data)
+            {
+                NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:data
+                                                                    options:NSJSONReadingMutableContainers error:nil];
+                NSString *accessToken = dic[@"access_token"];
+                NSString *openId = dic[@"openid"];
+                
+                [self getWechatUserInfoWithAccessToken:accessToken openId:openId];
+            }
+        });
+    });
 }
 
+- (void)getWechatUserInfoWithAccessToken:(NSString *)accessToken openId:(NSString *)openId
+{
+    NSString *url = [NSString stringWithFormat:kWechatGetUserInfo,accessToken,openId];
+    
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        NSURL *zoneUrl = [NSURL URLWithString:url];
+        NSString *zoneStr = [NSString stringWithContentsOfURL:zoneUrl encoding:NSUTF8StringEncoding error:nil];
+        NSData *data = [zoneStr dataUsingEncoding:NSUTF8StringEncoding];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (data)
+            {
+                NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:data
+                                                                    options:NSJSONReadingMutableContainers error:nil];
+                NSString *openId = [dic objectForKey:@"openid"];
+                NSString *memNickName = [dic objectForKey:@"nickname"];
+                
+                [self postServiceName:memNickName Openid:openId];
+            }
+        });
+    });
+}
 
-#pragma mark -- 网络请求
-/* 三方登录相关的网络请求*/
 - (void)postServiceName:(NSString *)name Openid:(NSString *)openId
 {
-    NSDictionary *params;
-    if ([_type isEqualToString:@"WECHAT"])
-    {
-        params = @{@"gameId":_gameId,
-                   @"type":_type,
-                   @"wechatId":openId,
-                   @"name":name};
+    YKLoginRequest *login = [[YKLoginRequest alloc] initWithGameId:_gameId openId:openId type:_type name:name];
+    [login startWithCompletionBlockWithSuccess:^(__kindof YTKBaseRequest * _Nonnull request) {
         
-    } else if ([_type isEqualToString:@"FACEBOOK"])
-    {
-        params = @{@"gameId":_gameId,
-                   @"type":_type,
-                   @"facebookId":openId,
-                   @"name":name};
-    } else if ([_type isEqualToString:@"LINE"])
-    {
-        params = @{@"gameId":_gameId,
-                   @"type":_type,
-                   @"lineId":openId,
-                   @"name":name};
-    }
-    
-    
-    [YKRequestNetwork postRequestByServiceUrl:kLocalHostUrl
-                                   parameters:params success:^(NSDictionary *data)
-     {
-         self.successBlock(data);
-     } failure:^(NSError *error)
-     {
-         self.failureBlock(error);
-     }];
-}
-
-- (void)getWechatPayOrderForGoods
-{
-    NSDictionary *params = @{@"gameId":@"1",
-                             @"productId":@"1",
-                             @"productName":@"Game props",
-                             @"playerId":@"121212121",
-                             @"status":@"OPEN",
-                             @"price":@"1",
-                             @"totalPrice":@"1",
-                             @"dealPrice":@"1",
-                             @"spbillCreateIp":[YKUtilTools getIPAddress:YES]
-                             };
-    [YKRequestNetwork postRequestByServiceUrl:kLocalHostGetOrderUrl parameters:params success:^(NSDictionary *data) {
-        
-        [self getWechatDateInfo:data];
-    } failure:^(NSError *error) {
-        NSLog(@"failure request  %@", error);
+        NSLog(@"%@",request.responseObject);
+        self.successBlock(request.responseObject);
+    } failure:^(__kindof YTKBaseRequest * _Nonnull request) {
+        NSLog(@"%@", request.error);
+        self.failureBlock(request.error);
     }];
 }
 
-- (void)getWechatDateInfo:(NSDictionary *)data
+/* 获取orderNumber */
+- (void)getOrderInfoWithParams:(NSDictionary *)params
+                       success:(void (^)(NSDictionary *))successBlock
+                       failure:(void (^)(NSError *))failureBlock
 {
-    NSString *url = [NSString stringWithFormat:@"%@/%@",kLocalHostWxPaymentInfo,data[@"orderId"]];
-    NSString *ordercreatetime = [data objectForKey:@"createDateTime"];
-    [YKRequestNetwork postRequestByServiceUrl:url parameters:@{} success:^(NSDictionary *data) {
-        NSLog(@"%@",data);
+    
+    if ( [params objectForKey:@"totalPrice"] == 0)
+    {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"提示" message:@"商品总价不能为0" delegate:nil cancelButtonTitle:nil otherButtonTitles:@"确定", nil];
+            [alert show];
+        });
+        return;
+    }
+    
+    YKRequestOrder *orderApi = [[YKRequestOrder alloc] initWithParams:params];
+    [orderApi startWithCompletionBlockWithSuccess:^(__kindof YTKBaseRequest * _Nonnull request) {
+        NSDictionary *data = request.responseObject;
+        successBlock(data);
+    } failure:^(__kindof YTKBaseRequest * _Nonnull request) {
+        NSLog(@"%@",request.error);
+        failureBlock(request.error);
+    }];
+}
+/* 发起微信支付 通过orderNumber*/
+- (void)lunchWechatPayWithOrderNum:(NSString *)orderNum orderCreateTime:(NSString *)orderCreateTime
+{
+    YKWechatPayRequest *wechatApi = [[YKWechatPayRequest alloc] initWithOrderNumber:orderNum];
+    [wechatApi startWithCompletionBlockWithSuccess:^(__kindof YTKBaseRequest * _Nonnull request) {
+        
+        NSDictionary *result = [request.responseObject objectForKey:@"data"];
         //调起微信支付
         PayReq* req             = [[PayReq alloc] init];
-        req.openID              = [data objectForKey:@"appid"];
-        req.partnerId           = [data objectForKey:@"mch_id"];
-        req.prepayId            = [data objectForKey:@"prepay_id"];
-        req.nonceStr            = [data objectForKey:@"nonce_str"];
-        req.timeStamp           = [ordercreatetime intValue];
+        req.openID              = [result objectForKey:@"appid"];
+        req.partnerId           = [result objectForKey:@"mch_id"];
+        req.prepayId            = [result objectForKey:@"prepay_id"];
+        req.nonceStr            = [result objectForKey:@"nonce_str"];
+        req.timeStamp           = [orderCreateTime intValue];
         req.package             = @"Sign=WXPay";
+        
         NSString *newSign = [YKUtilTools createMD5SingForPay:req.openID partnerid:req.partnerId  prepayid:req.prepayId package:req.package noncestr:req.nonceStr timestamp:req.timeStamp];
         req.sign                = newSign;
         [WXApi sendReq:req];
-    } failure:^(NSError *error) {
-        NSLog(@"failure request %@", error);
+    } failure:^(__kindof YTKBaseRequest * _Nonnull request) {
+        NSLog(@"%@",request.error);
+    }];
+}
+
+
+/* 发起Paypal支付验证 通过orderNumber和PayPal回调返回的paypalId*/
+- (void)verifyPaypalWithPaypalId:(NSString *)paypalId orderNumber:(NSString *)orderNumber
+{
+    YKPaypalRequest *paypalApi = [[YKPaypalRequest alloc] initWithPaypalId:paypalId orderNum:orderNumber];
+    
+    [paypalApi startWithCompletionBlockWithSuccess:^(__kindof YTKBaseRequest * _Nonnull request) {
+        
+        NSLog(@"%@",request.responseObject);
+        if ([[request.responseObject objectForKey:@"code"] intValue] == 0) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"提示" message:@"Paypal支付成功" delegate:self cancelButtonTitle:nil otherButtonTitles:@"确定",nil];
+                [alert show];
+            });
+        }
+        
+    } failure:^(__kindof YTKBaseRequest * _Nonnull request) {
+        
+        NSLog(@"%@",request.error);
+    }];
+}
+
+/* 发起AppleIAP支付验证 通过orderNumber和PayPal回调返回的paypalId
+ * orderNumber 订单号
+ * receiptData apple支付凭证 base64字符串
+ * verifyEnvironment 环境 如果是沙箱传Sandbox 如果是正式环境不传
+ */
+- (void)verifyAppleIAPWithorderNumber:(NSString *)orderNumber receiptData:(NSString *)receiptData verifyEnvironment:(NSString *)verifyEnvironment
+{
+    YKIAPPayRequest *iapRequest = [[YKIAPPayRequest alloc] initWithOrderNumber:orderNumber receiptData:receiptData verifyEnvironment:verifyEnvironment];
+    [iapRequest startWithCompletionBlockWithSuccess:^(__kindof YTKBaseRequest * _Nonnull request) {
+        NSLog(@"%@",request.responseObject);
+        if ([[request.responseObject objectForKey:@"data"] intValue] == 1) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"提示" message:@"苹果iap内购支付成功" delegate:self cancelButtonTitle:nil otherButtonTitles:@"确定",nil];
+                [alert show];
+            });
+        } else
+        {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"提示" message:[request.responseObject objectForKey:@"message"] delegate:self cancelButtonTitle:nil otherButtonTitles:@"确定",nil];
+                [alert show];
+            });
+        }
+        
+    } failure:^(__kindof YTKBaseRequest * _Nonnull request) {
+        NSLog(@"%@",request.error);
     }];
 }
 

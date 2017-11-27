@@ -10,11 +10,19 @@
 #endif
 #endif
 
+#import "PayPalConfiguration.h"
+#import "PayPalFuturePaymentViewController.h"
+#import "PayPalMobile.h"
+#import "PayPalOAuthScopes.h"
+#import "PayPalPayment.h"
+#import "PayPalPaymentViewController.h"
+#import "PayPalProfileSharingViewController.h"
 #import "WechatAuthSDK.h"
 #import "WXApi.h"
 #import "WXApiObject.h"
-#import "YKRequestNetwork.h"
+#import "YKLoginRequest.h"
 #import "YKSDKManager.h"
+#import "YKUtilsMacro.h"
 #import "YKUtilTools.h"
 
 FOUNDATION_EXPORT double IFreePlaySDKVersionNumber;
