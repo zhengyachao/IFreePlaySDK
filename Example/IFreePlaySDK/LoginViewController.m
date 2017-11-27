@@ -6,10 +6,10 @@
 //  Copyright © 2017年 ifreeplay. All rights reserved.
 //
 
-#import "YKSDKManager.h"
 #import "LoginViewController.h"
 #import "PayViewController.h"
 #import "IFProductListViewController.h"
+#import <IFreePlaySDK/YKSDKManager.h>
 
 @interface LoginViewController ()
 {
@@ -86,12 +86,7 @@
 - (void)createProductListButton
 {
     UIButton *payLogin = [UIButton buttonWithType:UIButtonTypeCustom];
-    CGFloat minHeight;
-    if (iPhoneX) {
-      minHeight  = self.view.frame.size.height - 88;
-    } else {
-        minHeight  = self.view.frame.size.height - 64;
-    }
+    CGFloat minHeight = self.view.frame.size.height - 64;
     
     payLogin.frame = CGRectMake(20, minHeight - 44 * 2, self.view.frame.size.width - 40, 44);
     payLogin.backgroundColor = [UIColor colorWithRed:255/255.0 green:143/255.0 blue:22/255.0 alpha:1.0];
@@ -110,7 +105,7 @@
 {
     [[YKSDKManager shareManager] loginFacebookVC:self
                                           GameId:@"3"
-                                            Type:PlatformsType(YKPlatformType_Facebook)//@"FACEBOOK"
+                                            Type:@"FACEBOOK"
                                          success:^(NSDictionary *data)
      {
          NSLog(@"打印Facebook的回掉信息 %@",data);
@@ -125,7 +120,7 @@
 /* 点击登录line */
 - (void)_onLoginLine:(UIButton *)button
 {
-    [[YKSDKManager shareManager] startLoginToLineGameId:@"2" Type:PlatformsType(YKPlatformType_Line) success:^(NSDictionary *data)
+    [[YKSDKManager shareManager] startLoginToLineGameId:@"2" Type:@"LINE" success:^(NSDictionary *data)
      {
          NSLog(@"打印LINE的回调信息 %@",data);
          [self showCallbackInfoData:@"Line登录回调信息" dataResult:data];
@@ -141,8 +136,7 @@
 {
     [[YKSDKManager shareManager] loginWechatGetUserInfoVc:self
                                                    GameId:@"1"
-                                                     Type:PlatformsType(YKPlatformType_Wechat)
-                                                  success:^(NSDictionary *data)
+                                                     Type:@"WECHAT"                                              success:^(NSDictionary *data)
      {
          NSLog(@"打印微信的回调信息  ---  %@",data);
          [self showCallbackInfoData:@"微信登录回调信息" dataResult:data];

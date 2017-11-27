@@ -18,8 +18,8 @@ typedef void (^YKSDKManagerRequestFailed)(NSError *error);
 + (instancetype)shareManager;
 
 #pragma mark -- FaceBook登录
-/* 初始化Facebook */
-- (void)initFaceBookSDKForApplication:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions;
+/* 初始化*/
+- (void)initSDKForApplication:(UIApplication *)application launchOptions:(NSDictionary *)launchOptions appId:(NSString *)appId clientId:(NSString *)clientIds;
 
 /* 记录APP激活数据统计 */
 + (void)activateApp;
@@ -74,7 +74,7 @@ typedef void (^YKSDKManagerRequestFailed)(NSError *error);
                        failure:(void (^)(NSError *))failureBlock;
 
 /* 发起微信支付 通过orderNumber*/
-- (void)lunchWechatPayWithOrderNum:(NSString *)orderNum orderCreateTime:(NSString *)orderCreateTime;
+- (void)lunchWechatPayWithOrderNum:(NSString *)orderNum;
 
 /* 发起Paypal支付验证 通过orderNumber和PayPal回调返回的paypalId*/
 - (void)verifyPaypalWithPaypalId:(NSString *)paypalId orderNumber:(NSString *)orderNumber;

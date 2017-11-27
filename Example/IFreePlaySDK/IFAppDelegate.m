@@ -29,8 +29,7 @@
     self.window.rootViewController = navVc;
     
     // 初始化SDK
-//    [[YKSDKManager shareManager] initSDKForApplication:application launchOptions:launchOptions appId:kWxApp_id clientId:kPaypalClientID];
-    
+    [[YKSDKManager shareManager] initSDKForApplication:application launchOptions:launchOptions appId:@"wx5c8698af4ea9d013" clientId:@"ATdJEC70AgF4ae_jIaK8WiVMzxBiarr-Whf1dJMAWbGm8IVQG57o28GA_5hLKvNFIH9vIoPqG13MLQ8T"];
     
     return YES;
 }

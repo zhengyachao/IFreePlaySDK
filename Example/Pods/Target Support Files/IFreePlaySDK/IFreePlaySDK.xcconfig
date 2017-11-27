@@ -3,7 +3,7 @@ FRAMEWORK_SEARCH_PATHS = $(inherited) "${PODS_ROOT}/../../IFreePlaySDK/libs" "$P
 GCC_PREPROCESSOR_DEFINITIONS = $(inherited) COCOAPODS=1
 HEADER_SEARCH_PATHS = "${PODS_ROOT}/Headers/Private" "${PODS_ROOT}/Headers/Public"
 LIBRARY_SEARCH_PATHS = $(inherited) "${PODS_ROOT}/../../IFreePlaySDK/libs"
-OTHER_LDFLAGS = -l"PayPalMobile" -l"WeChatSDK" -l"c++" -l"sqlite3" -l"z" -framework "CFNetwork" -framework "CoreTelephony" -framework "Foundation" -framework "LineSDK" -framework "Security" -framework "SystemConfiguration" -framework "UIKit"
+OTHER_LDFLAGS = -ObjC -l"PayPalMobile" -l"WeChatSDK" -l"c++" -l"sqlite3" -l"z" -framework "Accelerate" -framework "AddressBook" -framework "AudioToolbox" -framework "CFNetwork" -framework "CoreGraphics" -framework "CoreLocation" -framework "CoreMedia" -framework "CoreTelephony" -framework "Foundation" -framework "LineSDK" -framework "MessageUI" -framework "MobileCoreServices" -framework "PassKit" -framework "SafariServices" -framework "Security" -framework "SystemConfiguration" -framework "UIKit" -framework "WebKit"
 PODS_BUILD_DIR = $BUILD_DIR
 PODS_CONFIGURATION_BUILD_DIR = $PODS_BUILD_DIR/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)
 PODS_ROOT = ${SRCROOT}

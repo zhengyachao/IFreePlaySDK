@@ -25,7 +25,9 @@ TODO: 集成facebook登录，line登录，微信登录，微信支付，paypal�
   s.vendored_frameworks = 'IFreePlaySDK/libs/LineSDK.framework'
 
   s.libraries = 'c++', 'sqlite3', 'z'
-  s.frameworks = 'UIKit', 'Foundation', 'Security','CoreTelephony', 'SystemConfiguration','CFNetwork'
+  s.frameworks = 'UIKit', 'Foundation', 'Security','CoreTelephony', 'SystemConfiguration','CFNetwork','WebKit','PassKit','MobileCoreServices','AddressBook','CoreGraphics','CoreLocation','Accelerate','AudioToolbox','CoreMedia','MessageUI','SafariServices'
+
+  s.xcconfig         = { 'OTHER_LDFLAGS' => '-lc++ -ObjC'}
 
   s.dependency 'FBSDKCoreKit'
   s.dependency 'FBSDKLoginKit'

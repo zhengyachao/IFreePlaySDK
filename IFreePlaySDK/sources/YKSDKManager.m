@@ -11,6 +11,7 @@
 #import "YKUtilTools.h"
 #import "YKSDKManager.h"
 #import "YKUtilsMacro.h"
+#import "PayPalMobile.h"
 #import "YKLoginRequest.h"
 #import <LineSDK/LineSDK.h>
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
@@ -42,11 +43,13 @@
 }
 
 #pragma mark -- FaceBook登录相关
-/* 初始化facebook */
-- (void)initFaceBookSDKForApplication:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+/* 初始化SDK */
+- (void)initSDKForApplication:(UIApplication *)application launchOptions:(NSDictionary *)launchOptions appId:(NSString *)appId clientId:(NSString *)clientIds {
     
-    [[FBSDKApplicationDelegate sharedInstance] application:application
-                             didFinishLaunchingWithOptions:launchOptions];
+    [[FBSDKApplicationDelegate sharedInstance] application:application didFinishLaunchingWithOptions:launchOptions];
+    
+    [PayPalMobile initializeWithClientIdsForEnvironments:@{PayPalEnvironmentSandbox : clientIds}];
+    [WXApi registerApp:appId enableMTA:NO];
 }
 
 + (void)activateApp {
@@ -329,7 +332,7 @@
     }];
 }
 /* 发起微信支付 通过orderNumber*/
-- (void)lunchWechatPayWithOrderNum:(NSString *)orderNum orderCreateTime:(NSString *)orderCreateTime
+- (void)lunchWechatPayWithOrderNum:(NSString *)orderNum
 {
     YKWechatPayRequest *wechatApi = [[YKWechatPayRequest alloc] initWithOrderNumber:orderNum];
     [wechatApi startWithCompletionBlockWithSuccess:^(__kindof YTKBaseRequest * _Nonnull request) {
@@ -341,7 +344,11 @@
         req.partnerId           = [result objectForKey:@"mch_id"];
         req.prepayId            = [result objectForKey:@"prepay_id"];
         req.nonceStr            = [result objectForKey:@"nonce_str"];
-        req.timeStamp           = [orderCreateTime intValue];
+        NSDate* date = [NSDate dateWithTimeIntervalSinceNow:0];//获取当前时间0秒后的时间
+        NSTimeInterval time=[date timeIntervalSince1970] * 1000;// *1000 是精确到毫秒，不乘就是精确到秒
+        NSString *timeString = [NSString stringWithFormat:@"%.0f", time];
+        
+        req.timeStamp           = [timeString intValue];
         req.package             = @"Sign=WXPay";
         
         NSString *newSign = [YKUtilTools createMD5SingForPay:req.openID partnerid:req.partnerId  prepayid:req.prepayId package:req.package noncestr:req.nonceStr timestamp:req.timeStamp];

@@ -22,6 +22,8 @@
 		6003F5BC195388D20070C39A /* Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6003F5BB195388D20070C39A /* Tests.m */; };
 		6A097F161F54343B003DBACA /* Pods_IFreePlaySDK_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B1DC6AFD4A3EB6E6ED9C1E4B /* Pods_IFreePlaySDK_Example.framework */; };
 		6A097F171F54343B003DBACA /* Pods_IFreePlaySDK_Example.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B1DC6AFD4A3EB6E6ED9C1E4B /* Pods_IFreePlaySDK_Example.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		6A134B3B1FCBF8DD00696B27 /* GTMBase64.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A134B381FCBF8DD00696B27 /* GTMBase64.m */; };
+		6A134B3C1FCBF8DD00696B27 /* home.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6A134B3A1FCBF8DD00696B27 /* home.storyboard */; };
 		6A504B3B1FCBAE1500D6D868 /* IFProductListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A504B351FCBAE1400D6D868 /* IFProductListViewController.m */; };
 		6A504B3C1FCBAE1500D6D868 /* LoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A504B361FCBAE1400D6D868 /* LoginViewController.m */; };
 		6A504B3D1FCBAE1500D6D868 /* PayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A504B381FCBAE1500D6D868 /* PayViewController.m */; };
@@ -76,6 +78,10 @@
 		6003F5B9195388D20070C39A /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		6003F5BB195388D20070C39A /* Tests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Tests.m; sourceTree = "<group>"; };
 		606FC2411953D9B200FFA9A0 /* Tests-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Tests-Prefix.pch"; sourceTree = "<group>"; };
+		6A134B371FCBF8DD00696B27 /* GTMBase64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GTMBase64.h; sourceTree = "<group>"; };
+		6A134B381FCBF8DD00696B27 /* GTMBase64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GTMBase64.m; sourceTree = "<group>"; };
+		6A134B391FCBF8DD00696B27 /* GTMDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GTMDefines.h; sourceTree = "<group>"; };
+		6A134B3A1FCBF8DD00696B27 /* home.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = home.storyboard; sourceTree = "<group>"; };
 		6A504B351FCBAE1400D6D868 /* IFProductListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IFProductListViewController.m; sourceTree = "<group>"; };
 		6A504B361FCBAE1400D6D868 /* LoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoginViewController.m; sourceTree = "<group>"; };
 		6A504B371FCBAE1500D6D868 /* LoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoginViewController.h; sourceTree = "<group>"; };
@@ -163,6 +169,7 @@
 		6003F593195388D20070C39A /* Example for IFreePlaySDK */ = {
 			isa = PBXGroup;
 			children = (
+				6A134B361FCBF8DD00696B27 /* GTMBase64 */,
 				6A504B3A1FCBAE1500D6D868 /* IFProductListViewController.h */,
 				6A504B351FCBAE1400D6D868 /* IFProductListViewController.m */,
 				6A504B371FCBAE1500D6D868 /* LoginViewController.h */,
@@ -216,6 +223,17 @@
 				19D402ED82AC6E4308B4BFC3 /* LICENSE */,
 			);
 			name = "Podspec Metadata";
+			sourceTree = "<group>";
+		};
+		6A134B361FCBF8DD00696B27 /* GTMBase64 */ = {
+			isa = PBXGroup;
+			children = (
+				6A134B371FCBF8DD00696B27 /* GTMBase64.h */,
+				6A134B381FCBF8DD00696B27 /* GTMBase64.m */,
+				6A134B391FCBF8DD00696B27 /* GTMDefines.h */,
+				6A134B3A1FCBF8DD00696B27 /* home.storyboard */,
+			);
+			path = GTMBase64;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -308,6 +326,7 @@
 				71719F9F1E33DC2100824A3D /* LaunchScreen.storyboard in Resources */,
 				6003F5A9195388D20070C39A /* Images.xcassets in Resources */,
 				6003F598195388D20070C39A /* InfoPlist.strings in Resources */,
+				6A134B3C1FCBF8DD00696B27 /* home.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -441,6 +460,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				6A504B3C1FCBAE1500D6D868 /* LoginViewController.m in Sources */,
+				6A134B3B1FCBF8DD00696B27 /* GTMBase64.m in Sources */,
 				6003F59E195388D20070C39A /* IFAppDelegate.m in Sources */,
 				6A504B3D1FCBAE1500D6D868 /* PayViewController.m in Sources */,
 				6003F59A195388D20070C39A /* main.m in Sources */,

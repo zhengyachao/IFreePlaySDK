@@ -7,10 +7,10 @@
 //
 
 #import "GTMBase64.h"
-#import "PayPalMobile.h"
-#import "YKSDKManager.h"
-#import "YKElicitIPTool.h"
-#import "YKRequestNetwork.h"
+#import <IFreePlaySDK/PayPalMobile.h>
+#import <IFreePlaySDK/YKSDKManager.h>
+#import <IFreePlaySDK/YKUtilTools.h>
+#import <IFreePlaySDK/YKLoginRequest.h>
 #import "PayViewController.h"
 #import <StoreKit/StoreKit.h>
 #import <LocalAuthentication/LocalAuthentication.h>

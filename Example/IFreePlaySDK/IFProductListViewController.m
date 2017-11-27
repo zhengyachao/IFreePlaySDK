@@ -6,9 +6,9 @@
 //  Copyright © 2017年 ifreeplay. All rights reserved.
 //
 
-#import "YKSDKManager.h"
-//#import "YKElicitIPTool.h"
-#import "YKLoginRequest.h"
+#import <IFreePlaySDK/YKSDKManager.h>
+#import <IFreePlaySDK/YKUtilTools.h>
+#import <IFreePlaySDK/YKLoginRequest.h>
 #import "PayViewController.h"
 #import "IFProductListViewController.h"
 
@@ -116,12 +116,12 @@
                              @"productId":[dict objectForKey:@"id"],
                              @"productName":[dict objectForKey:@"name"],
                              @"playerId":@"1",
-                             @"status":PayStatus(YKPayStatusOPEN),
+                             @"status":@"OPEN",
                              @"price":[dict objectForKey:@"price"],
                              @"totalPrice":[dict objectForKey:@"price"],
                              @"dealPrice":[dict objectForKey:@"price"],
-                             @"currencyTypes":CurrencyType(YKUSD),
-                             @"spbillCreateIp":[YKElicitIPTool getIPAddress:YES]
+                             @"currencyTypes":@"USD",
+                             @"spbillCreateIp":[YKUtilTools getIPAddress:YES]
                              };
     [[YKSDKManager shareManager] getOrderInfoWithParams:params
                                                success:^(NSDictionary *result)

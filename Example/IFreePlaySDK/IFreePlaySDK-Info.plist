@@ -22,6 +22,54 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>1.0</string>
+    <key>CFBundleURLTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>fb831242433701387</string>
+            </array>
+        </dict>
+        <dict>
+            <key>CFBundleTypeRole</key>
+            <string>Editor</string>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>line3rdp.$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+            </array>
+        </dict>
+        <dict>
+            <key>CFBundleTypeRole</key>
+            <string>Editor</string>
+            <key>CFBundleURLName</key>
+            <string>weixin</string>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>wx5c8698af4ea9d013</string>
+            </array>
+        </dict>
+        <dict/>
+    </array>
+    <key>CFBundleVersion</key>
+    <string>1</string>
+    <key>FacebookAppID</key>
+    <string>831242433701387</string>
+    <key>FacebookDisplayName</key>
+    <string>fabdemo</string>
+    <key>LSApplicationQueriesSchemes</key>
+    <array>
+        <string>fbapi</string>
+        <string>fb-messenger-api</string>
+        <string>fbauth2</string>
+        <string>fbshareextension</string>
+        <string>lineauth</string>
+        <string>line3rdp.$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+        <string>weixin</string>
+        <string>wechat</string>
+        <string>com.paypal.ppclient.touch.v1</string>
+        <string>com.paypal.ppclient.touch.v2</string>
+        <string>org-appextension-feature-password-management</string>
+    </array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
