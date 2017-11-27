@@ -27,6 +27,7 @@
 		6A504B3B1FCBAE1500D6D868 /* IFProductListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A504B351FCBAE1400D6D868 /* IFProductListViewController.m */; };
 		6A504B3C1FCBAE1500D6D868 /* LoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A504B361FCBAE1400D6D868 /* LoginViewController.m */; };
 		6A504B3D1FCBAE1500D6D868 /* PayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A504B381FCBAE1500D6D868 /* PayViewController.m */; };
+		6AFB9B4D1FCC107600234504 /* README.md in Sources */ = {isa = PBXBuildFile; fileRef = 6AFB9B4C1FCC107600234504 /* README.md */; };
 		71719F9F1E33DC2100824A3D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 71719F9D1E33DC2100824A3D /* LaunchScreen.storyboard */; };
 		B033D9BCCA943B8B788F8773 /* Pods_IFreePlaySDK_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B1DC6AFD4A3EB6E6ED9C1E4B /* Pods_IFreePlaySDK_Example.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 /* End PBXBuildFile section */
@@ -88,6 +89,7 @@
 		6A504B381FCBAE1500D6D868 /* PayViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PayViewController.m; sourceTree = "<group>"; };
 		6A504B391FCBAE1500D6D868 /* PayViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PayViewController.h; sourceTree = "<group>"; };
 		6A504B3A1FCBAE1500D6D868 /* IFProductListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IFProductListViewController.h; sourceTree = "<group>"; };
+		6AFB9B4C1FCC107600234504 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		71719F9E1E33DC2100824A3D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		B1DC6AFD4A3EB6E6ED9C1E4B /* Pods_IFreePlaySDK_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_IFreePlaySDK_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DA18D342A6CE4E6BA39B075E /* Pods-IFreePlaySDK_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-IFreePlaySDK_Example.release.xcconfig"; path = "Pods/Target Support Files/Pods-IFreePlaySDK_Example/Pods-IFreePlaySDK_Example.release.xcconfig"; sourceTree = "<group>"; };
@@ -219,6 +221,7 @@
 		60FF7A9C1954A5C5007DD14C /* Podspec Metadata */ = {
 			isa = PBXGroup;
 			children = (
+				6AFB9B4C1FCC107600234504 /* README.md */,
 				5BC0B16CEC2F9A7EAD5754BD /* IFreePlaySDK.podspec */,
 				19D402ED82AC6E4308B4BFC3 /* LICENSE */,
 			);
@@ -462,6 +465,7 @@
 				6A504B3C1FCBAE1500D6D868 /* LoginViewController.m in Sources */,
 				6A134B3B1FCBF8DD00696B27 /* GTMBase64.m in Sources */,
 				6003F59E195388D20070C39A /* IFAppDelegate.m in Sources */,
+				6AFB9B4D1FCC107600234504 /* README.md in Sources */,
 				6A504B3D1FCBAE1500D6D868 /* PayViewController.m in Sources */,
 				6003F59A195388D20070C39A /* main.m in Sources */,
 				6A504B3B1FCBAE1500D6D868 /* IFProductListViewController.m in Sources */,

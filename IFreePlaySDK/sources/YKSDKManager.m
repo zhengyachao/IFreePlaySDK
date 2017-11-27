@@ -48,7 +48,8 @@
     
     [[FBSDKApplicationDelegate sharedInstance] application:application didFinishLaunchingWithOptions:launchOptions];
     
-    [PayPalMobile initializeWithClientIdsForEnvironments:@{PayPalEnvironmentSandbox : clientIds}];
+    [PayPalMobile initializeWithClientIdsForEnvironments:@{PayPalEnvironmentProduction :clientIds,
+                                                           PayPalEnvironmentSandbox : clientIds}];
     [WXApi registerApp:appId enableMTA:NO];
 }
 
@@ -63,6 +64,30 @@
                                                            openURL:url
                                                  sourceApplication:sourceApplication
                                                         annotation:annotation];
+}
+- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary *)options
+{
+    BOOL result =  [[LineSDKLogin sharedInstance] handleOpenURL:url];
+    if (!result)
+    {
+        BOOL resultFb = [[FBSDKApplicationDelegate sharedInstance] application:app
+                                                                       openURL:url
+                                 sourceApplication:options[UIApplicationOpenURLOptionsSourceApplicationKey]
+                                                annotation:options[UIApplicationOpenURLOptionsAnnotationKey]];
+        if (!resultFb)
+        {
+            return [WXApi handleOpenURL:url delegate:self];
+        }
+            
+        return resultFb;
+    }
+        
+    return result;
+}
+    
+- (BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url
+{
+    return [WXApi handleOpenURL:url delegate:self];
 }
 
 /* 登录Facebook读取用户权限 */

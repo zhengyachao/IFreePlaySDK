@@ -28,6 +28,10 @@ typedef void (^YKSDKManagerRequestFailed)(NSError *error);
             openURL:(NSURL *)url
   sourceApplication:(NSString *)sourceApplication
          annotation:(id)annotation;
+    
+- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary *)options;
+    
+- (BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url;
 
 /* 登录Facebook读取用户权限 */
 - (void)loginFacebookVC:(UIViewController *)vc

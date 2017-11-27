@@ -60,5 +60,29 @@
 {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
 }
+    
+/* iOS 9.0之前 */
+- (BOOL)application:(UIApplication *)application
+            openURL:(NSURL *)url
+  sourceApplication:(NSString *)sourceApplication
+         annotation:(id)annotation
+{
+    return [[YKSDKManager shareManager] application:application
+                                                openURL:url
+                                      sourceApplication:sourceApplication
+                                             annotation:annotation];
+}
+    
+//如果发现弹出的登录无法关闭，请将添加下面这个，注释上面那个
+//解决方案来源：http://stackoverflow.com/questions/32299271/facebook-sdk-login-never-calls-back-my-application-on-ios-9
+- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary *)options
+{
+    return  [[YKSDKManager shareManager] application:app openURL:url options:options];
+}
+    
+- (BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url
+{
+    return [[YKSDKManager shareManager] application:application handleOpenURL:url];
+}
 
 @end
