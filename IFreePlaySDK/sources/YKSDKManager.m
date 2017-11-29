@@ -409,7 +409,7 @@
  * receiptData apple支付凭证 base64字符串
  * verifyEnvironment 环境 如果是沙箱传Sandbox 如果是正式环境不传
  */
-- (void)verifyAppleIAPWithorderId:(NSString *)orderId receiptData:(NSString *)receiptData verifyEnvironment:(NSString *)verifyEnvironment
+- (void)verifyAppleIAPWithOrderId:(NSString *)orderId receiptData:(NSString *)receiptData verifyEnvironment:(NSString *)verifyEnvironment
 {
     YKIAPPayRequest *iapRequest = [[YKIAPPayRequest alloc] initWithOrderId:orderId receiptData:receiptData verifyEnvironment:verifyEnvironment];
     [iapRequest startWithCompletionBlockWithSuccess:^(__kindof YTKBaseRequest * _Nonnull request) {

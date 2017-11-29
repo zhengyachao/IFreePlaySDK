@@ -13,12 +13,14 @@
 typedef void (^YKSDKManagerRequestSuccess)(NSDictionary *data);
 typedef void (^YKSDKManagerRequestFailed)(NSError *error);
 
+// 三方登录的平台类型
 typedef enum
 {
     YKPlatformType_Facebook, // FACEBOOK
     YKPlatformType_Line,     // LINE
     YKPlatformType_Wechat    // WECHAT
 } YKPlatformsType;
+
 // 支付状态
 typedef enum
 {
@@ -30,16 +32,17 @@ typedef enum
 // 货币类型
 typedef enum
 {
-    YKUSD,
-    YKHKD,
-    YKJPY,
-    YKGBP,
-    YKEUR
+    YKCNY,        // 人民币
+    YKUSD,        // 美元
+    YKHKD,        // 港币
+    YKJPY,        // 日元
+    YKGBP,        // 英镑
+    YKEUR         // 欧元
 } YKCurrencyType;
 
 #define PlatformsType(enum) [@[@"FACEBOOK",@"LINE",@"WECHAT"] objectAtIndex:enum]
 #define PayStatus(enum)     [@[@"OPEN",@"PAYED",@"REFUND",@"CANCELED"] objectAtIndex:enum]
-#define CurrencyType(enum)  [@[@"USD",@"HKD",@"JPY",@"GBP",@"EUR"] objectAtIndex:enum]
+#define CurrencyType(enum)  [@[@"CNY",@"USD",@"HKD",@"JPY",@"GBP",@"EUR"] objectAtIndex:enum]
 
 @interface YKSDKManager : NSObject
 
