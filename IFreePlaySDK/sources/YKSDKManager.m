@@ -132,7 +132,7 @@
              //获取用户id, 昵称
              if ([FBSDKAccessToken currentAccessToken])
              {
-                 FBSDKGraphRequest *request = [[FBSDKGraphRequest alloc] initWithGraphPath:@"me?fields=id,name" parameters:nil];
+                 FBSDKGraphRequest *request = [[FBSDKGraphRequest alloc] initWithGraphPath:@"me?fields=id,name,picture" parameters:nil];
                  [request startWithCompletionHandler:^(FBSDKGraphRequestConnection *connection, id result, NSError *error)
                   {
                       NSString *userID = result[@"id"];
@@ -141,9 +141,10 @@
                       {
                           NSString *userID = result[@"id"];
                           NSString *userName = result[@"name"];
+                          NSString *userPicture = result[@"picture"] [@"data"] [@"url"];
                           
-                          NSLog(@"userId = %@, userName = %@",userID,userName);
-                          [self postServiceName:userName Openid:userID];
+                          NSLog(@"userId = %@, userName = %@, userPicture= %@",userID,userName,userPicture);
+                          [self postServiceName:userName openId:userID headPortraitUrl:userPicture];
                       }
                   }];
              }
@@ -190,8 +191,8 @@
     else {
         NSString * userID = profile.userID;
         NSString * displayName = profile.displayName;
-        [self postServiceName:displayName Openid:userID];
-    }
+        NSString *headPortraitUrl = [NSString stringWithFormat:@"%@", profile.pictureURL];
+        [self postServiceName:displayName openId:userID headPortraitUrl:headPortraitUrl];    }
 }
 
 #pragma mark -- 微信登录
@@ -322,16 +323,19 @@
                                                                     options:NSJSONReadingMutableContainers error:nil];
                 NSString *openId = [dic objectForKey:@"openid"];
                 NSString *memNickName = [dic objectForKey:@"nickname"];
+                NSString *headPortraitUrl = [dic objectForKey:@"headimgurl"];
                 
-                [self postServiceName:memNickName Openid:openId];
+                [self postServiceName:memNickName openId:openId headPortraitUrl:headPortraitUrl];
             }
         });
     });
 }
 
-- (void)postServiceName:(NSString *)name Openid:(NSString *)openId
+- (void)postServiceName:(NSString *)name
+                 openId:(NSString *)openId
+        headPortraitUrl:(NSString *)headPortraitUrl
 {
-    YKLoginRequest *login = [[YKLoginRequest alloc] initWithGameId:_gameId openId:openId type:_type name:name];
+    YKLoginRequest *login = [[YKLoginRequest alloc] initWithGameId:_gameId openId:openId type:_type name:name headPortraitUrl:headPortraitUrl];
     [login startWithCompletionBlockWithSuccess:^(__kindof YTKBaseRequest * _Nonnull request) {
         
         NSLog(@"%@",request.responseObject);

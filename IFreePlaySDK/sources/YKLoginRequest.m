@@ -16,18 +16,21 @@
     NSString *_openId;
     NSString *_type;
     NSString *_name;
+    NSString *_headPortraitUrl;
 }
 
 - (instancetype)initWithGameId:(NSString *)gameId
                         openId:(NSString *)openId
                           type:(NSString *)type
                           name:(NSString *)name
+               headPortraitUrl:(NSString *)headPortraitUrl
 {
     if (self = [super init]) {
         _gameId = gameId;
         _openId = openId;
         _type = type;
         _name = name;
+        _headPortraitUrl = headPortraitUrl;
     }
     return self;
 }
@@ -60,20 +63,26 @@
         params = @{ @"gameId":_gameId,
                     @"type":_type,
                     @"wechatId":_openId,
-                    @"name":_name };
+                    @"name":_name,
+                    @"headPortraitUrl":_headPortraitUrl
+                    };
         
     } else if ([_type isEqualToString:@"FACEBOOK"])
     {
         params = @{ @"gameId":_gameId,
                     @"type":_type,
                     @"facebookId":_openId,
-                    @"name":_name };
+                    @"name":_name,
+                    @"headPortraitUrl":_headPortraitUrl
+                    };
     } else if ([_type isEqualToString:@"LINE"])
     {
         params = @{ @"gameId":_gameId,
                     @"type":_type,
                     @"lineId":_openId,
-                    @"name":_name };
+                    @"name":_name,
+                    @"headPortraitUrl":_headPortraitUrl
+                    };
     }
     
     return params;

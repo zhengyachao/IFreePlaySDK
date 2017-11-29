@@ -14,7 +14,8 @@
 - (instancetype)initWithGameId:(NSString *)gameId
                         openId:(NSString *)openId
                           type:(NSString *)type
-                          name:(NSString *)name;
+                          name:(NSString *)name
+               headPortraitUrl:(NSString *)headPortraitUrl;
 @end
 
 @interface YKRequestOrder : YTKRequest
