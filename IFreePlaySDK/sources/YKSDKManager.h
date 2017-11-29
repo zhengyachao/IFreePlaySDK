@@ -13,6 +13,34 @@
 typedef void (^YKSDKManagerRequestSuccess)(NSDictionary *data);
 typedef void (^YKSDKManagerRequestFailed)(NSError *error);
 
+typedef enum
+{
+    YKPlatformType_Facebook, // FACEBOOK
+    YKPlatformType_Line,     // LINE
+    YKPlatformType_Wechat    // WECHAT
+} YKPlatformsType;
+// 支付状态
+typedef enum
+{
+    YKPayStatusOPEN,// 新建
+    YKPayStatusPAYED,// 已支付
+    YKPayStatusREFUND,// 已退款
+    YKPayStatusCANCELED // 已取消
+} YKPayStatus;
+// 货币类型
+typedef enum
+{
+    YKUSD,
+    YKHKD,
+    YKJPY,
+    YKGBP,
+    YKEUR
+} YKCurrencyType;
+
+#define PlatformsType(enum) [@[@"FACEBOOK",@"LINE",@"WECHAT"] objectAtIndex:enum]
+#define PayStatus(enum)     [@[@"OPEN",@"PAYED",@"REFUND",@"CANCELED"] objectAtIndex:enum]
+#define CurrencyType(enum)  [@[@"USD",@"HKD",@"JPY",@"GBP",@"EUR"] objectAtIndex:enum]
+
 @interface YKSDKManager : NSObject
 
 + (instancetype)shareManager;
@@ -62,32 +90,28 @@ typedef void (^YKSDKManagerRequestFailed)(NSError *error);
                             Type:(NSString *)type
                          success:(void (^)(NSDictionary *))successBlock
                          failure:(void (^)(NSError *))failureBlock;
-/* 获取orderNmuber
- * gameId      游戏id
+/* 获取orderId
+ * params对象包括productId、playerId、CurrencyType、spbillCreateIp四个参数
  * productId   商品id
- * productName 商品名称
  * playerId    玩家id
- * status      状态"OPEN" 新建 PAYED,已支付REFUND,已退款 CANCELED,已取消
- * price       商品单价
- * totalPrice  订单总价
- * dealPrice   订单成交价
+ * CurrencyType 货币类型
  * spbillCreateIp  终端的设备IP地址
  */
 - (void)getOrderInfoWithParams:(NSDictionary *)params
                        success:(void (^)(NSDictionary *))successBlock
                        failure:(void (^)(NSError *))failureBlock;
 
-/* 发起微信支付 通过orderNumber*/
-- (void)lunchWechatPayWithOrderNum:(NSString *)orderNum;
+/* 发起微信支付 通过orderId*/
+- (void)lunchWechatPayWithOrderId:(NSString *)orderId viewController:(UIViewController *)vc;
 
-/* 发起Paypal支付验证 通过orderNumber和PayPal回调返回的paypalId*/
-- (void)verifyPaypalWithPaypalId:(NSString *)paypalId orderNumber:(NSString *)orderNumber;
+/* 发起Paypal支付验证 通过orderId和PayPal回调返回的paypalId*/
+- (void)verifyPaypalWithPaypalId:(NSString *)paypalId orderId:(NSString *)orderId;
 
-/* 发起AppleIAP支付验证 通过orderNumber和PayPal回调返回的paypalId
- * orderNumber 订单号
+/* 发起AppleIAP支付验证 通过orderId和PayPal回调返回的paypalId
+ * orderId 订单号
  * receiptData apple支付凭证 base64字符串
  * verifyEnvironment 环境 如果是沙箱传Sandbox 如果是正式环境传Live
  */
-- (void)verifyAppleIAPWithorderNumber:(NSString *)orderNumber receiptData:(NSString *)receiptData verifyEnvironment:(NSString *)verifyEnvironment;
+- (void)verifyAppleIAPWithOrderId:(NSString *)orderId receiptData:(NSString *)receiptData verifyEnvironment:(NSString *)verifyEnvironment;
 
 @end

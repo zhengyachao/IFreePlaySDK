@@ -10,6 +10,7 @@
 #import "PayViewController.h"
 #import "IFProductListViewController.h"
 #import <IFreePlaySDK/YKSDKManager.h>
+#import <IFreePlaySDK/YKUtilsMacro.h>
 
 @interface LoginViewController ()
 {
@@ -27,7 +28,9 @@
     self.title = @"三方登录";
     
     [self createFBLoginButton];
+    [self createFBShareButton];
     [self createLineLoginButton];
+    [self createLineShareButton];
     [self createWechatLoginButton];
     [self createProductListButton];
 }
@@ -42,12 +45,26 @@
 - (void)createFBLoginButton
 {
     UIButton *fbLogin = [UIButton buttonWithType:UIButtonTypeCustom];
-    fbLogin.frame = CGRectMake(20, 20, self.view.frame.size.width - 40, 44);
+    fbLogin.frame = CGRectMake(20, 10, self.view.frame.size.width - 40, 44);
     fbLogin.backgroundColor = [UIColor lightGrayColor];
     [fbLogin setTitle:@"FaceBook登录" forState:UIControlStateNormal];
-    [fbLogin setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
+    [fbLogin setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     fbLogin.titleLabel.font = [UIFont systemFontOfSize:16.0f];
     [fbLogin addTarget:self action:@selector(_onLoginFaceBook:) forControlEvents:UIControlEventTouchUpInside];
+    fbLogin.layer.cornerRadius = 5.0f;
+    
+    [self.view addSubview:fbLogin];
+}
+
+- (void)createFBShareButton {
+    
+    UIButton *fbLogin = [UIButton buttonWithType:UIButtonTypeCustom];
+    fbLogin.frame = CGRectMake(20, 10 * 2 + 44, self.view.frame.size.width - 40, 44);
+    fbLogin.backgroundColor = [UIColor lightGrayColor];
+    [fbLogin setTitle:@"FaceBook分享" forState:UIControlStateNormal];
+    [fbLogin setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
+    fbLogin.titleLabel.font = [UIFont systemFontOfSize:16.0f];
+    [fbLogin addTarget:self action:@selector(_onShareFaceBook:) forControlEvents:UIControlEventTouchUpInside];
     fbLogin.layer.cornerRadius = 5.0f;
     
     [self.view addSubview:fbLogin];
@@ -57,10 +74,23 @@
 - (void)createLineLoginButton
 {
     UIButton *lineLogin = [UIButton buttonWithType:UIButtonTypeCustom];
-    lineLogin.frame = CGRectMake(20, 20 + 44 * 2 , self.view.frame.size.width - 40, 44);
+    lineLogin.frame = CGRectMake(20, 10 * 3 + 44 * 2 , self.view.frame.size.width - 40, 44);
     lineLogin.backgroundColor = [UIColor lightGrayColor];
     [lineLogin setTitle:@"Line登录" forState:UIControlStateNormal];
-    [lineLogin setTitleColor:[UIColor redColor] forState:UIControlStateNormal];
+    [lineLogin setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    lineLogin.titleLabel.font = [UIFont systemFontOfSize:16.0f];
+    [lineLogin addTarget:self action:@selector(_onLoginLine:) forControlEvents:UIControlEventTouchUpInside];
+    lineLogin.layer.cornerRadius = 5.0f;
+    
+    [self.view addSubview:lineLogin];
+}
+
+- (void)createLineShareButton {
+    UIButton *lineLogin = [UIButton buttonWithType:UIButtonTypeCustom];
+    lineLogin.frame = CGRectMake(20, 10 * 4 + 44 * 3 , self.view.frame.size.width - 40, 44);
+    lineLogin.backgroundColor = [UIColor lightGrayColor];
+    [lineLogin setTitle:@"Line分享" forState:UIControlStateNormal];
+    [lineLogin setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
     lineLogin.titleLabel.font = [UIFont systemFontOfSize:16.0f];
     [lineLogin addTarget:self action:@selector(_onLoginLine:) forControlEvents:UIControlEventTouchUpInside];
     lineLogin.layer.cornerRadius = 5.0f;
@@ -72,7 +102,7 @@
 - (void)createWechatLoginButton
 {
     UIButton *wxBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    wxBtn.frame = CGRectMake(20, 20 + 44 * 4, self.view.frame.size.width - 40, 44);
+    wxBtn.frame = CGRectMake(20, 10 * 5 + 44 * 4, self.view.frame.size.width - 40, 44);
     wxBtn.backgroundColor = [UIColor lightGrayColor];
     [wxBtn setTitle:@"微信授权登录" forState:UIControlStateNormal];
     [wxBtn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
@@ -105,7 +135,7 @@
 {
     [[YKSDKManager shareManager] loginFacebookVC:self
                                           GameId:@"3"
-                                            Type:@"FACEBOOK"
+                                            Type:PlatformsType(YKPlatformType_Facebook)
                                          success:^(NSDictionary *data)
      {
          NSLog(@"打印Facebook的回掉信息 %@",data);
@@ -113,21 +143,26 @@
      } failure:^(NSError *error)
      {
          NSLog(@"打印错误信息%@",error);
-         [self showCallbackErrorData:@"FaceBook登录回调信息" error:error];
+         [self showCallbackErrorData:@"FaceBook登录错误信息" error:error];
      }];
+}
+
+- (void)_onShareFaceBook:(UIButton *)button {
+
 }
 
 /* 点击登录line */
 - (void)_onLoginLine:(UIButton *)button
 {
-    [[YKSDKManager shareManager] startLoginToLineGameId:@"2" Type:@"LINE" success:^(NSDictionary *data)
+    [[YKSDKManager shareManager] startLoginToLineGameId:@"2" Type:PlatformsType(YKPlatformType_Line)
+                                                success:^(NSDictionary *data)
      {
          NSLog(@"打印LINE的回调信息 %@",data);
          [self showCallbackInfoData:@"Line登录回调信息" dataResult:data];
      } failure:^(NSError *error)
      {
          NSLog(@"打印错误信息%@",error);
-         [self showCallbackErrorData:@"Line登录回调信息" error:error];
+         [self showCallbackErrorData:@"Line登录错误信息" error:error];
      }];
 }
 
@@ -136,7 +171,8 @@
 {
     [[YKSDKManager shareManager] loginWechatGetUserInfoVc:self
                                                    GameId:@"1"
-                                                     Type:@"WECHAT"                                              success:^(NSDictionary *data)
+                                                     Type:PlatformsType(YKPlatformType_Wechat)
+                                                  success:^(NSDictionary *data)
      {
          NSLog(@"打印微信的回调信息  ---  %@",data);
          [self showCallbackInfoData:@"微信登录回调信息" dataResult:data];
@@ -144,7 +180,7 @@
                                                   failure:^(NSError *error)
      {
          NSLog(@"打印错误信息%@",error);
-         [self showCallbackErrorData:@"微信登录回调信息" error:error];
+         [self showCallbackErrorData:@"微信登录错误信息" error:error];
      }];
 }
 

@@ -152,15 +152,15 @@
 @implementation YKPaypalRequest
 {
     NSString *_paypalId;
-    NSString *_orderNum;
+    NSString *_orderId;
 }
 
 - (instancetype)initWithPaypalId:(NSString *)paypalId
-                        orderNum:(NSString *)orderNum
+                         orderId:(NSString *)orderId
 {
     if (self = [super init]) {
         _paypalId = paypalId;
-        _orderNum = orderNum;
+        _orderId = orderId;
     }
     return self;
 }
@@ -174,7 +174,7 @@
 }
 
 - (id)requestArgument {
-    NSDictionary *params = @{ @"paymentId":_paypalId, @"orderNumber":_orderNum};
+    NSDictionary *params = @{ @"paymentId":_paypalId, @"orderNumber":_orderId};
     return params;
 }
 
@@ -182,13 +182,13 @@
 
 @implementation YKWechatPayRequest
 {
-    NSString *_orderNumber;
+    NSString *_orderId;
 }
 
-- (instancetype)initWithOrderNumber:(NSString *)orderNumber
+- (instancetype)initWithOrderId:(NSString *)orderId
 {
     if (self = [super init]) {
-        _orderNumber = orderNumber;
+        _orderId = orderId;
     }
     
     return self;
@@ -204,24 +204,24 @@
 
 - (id)requestArgument {
     
-    NSDictionary *params = @{@"orderNumber":_orderNumber};
+    NSDictionary *params = @{@"orderId":_orderId};
     return params;
 }
 @end
 
 @implementation YKIAPPayRequest
 {
-    NSString *_orderNumber;
+    NSString *_orderId;
     NSString *_receiptData;
     NSString *_verifyEnvironment;
 }
 
-- (instancetype)initWithOrderNumber:(NSString *)orderNumber
-                        receiptData:(NSString *)receiptData
-                  verifyEnvironment:(NSString *)verifyEnvironment
+- (instancetype)initWithOrderId:(NSString *)orderId
+                    receiptData:(NSString *)receiptData
+              verifyEnvironment:(NSString *)verifyEnvironment
 {
     if (self = [super init]) {
-        _orderNumber = orderNumber;
+        _orderId = orderId;
         _receiptData = receiptData;
         _verifyEnvironment = verifyEnvironment;
     }
@@ -239,7 +239,7 @@
 
 - (id)requestArgument
 {
-    NSDictionary *params = @{@"orderNumber":_orderNumber,
+    NSDictionary *params = @{@"orderId":_orderId,
                              @"receiptData":_receiptData,
                              @"verifyEnvironment":_verifyEnvironment
                              };

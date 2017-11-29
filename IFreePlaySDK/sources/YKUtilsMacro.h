@@ -9,37 +9,15 @@
 #ifndef YKUtilsMacro_h
 #define YKUtilsMacro_h
 
-typedef enum
-{
-    YKPlatformType_Facebook, // FACEBOOK
-    YKPlatformType_Line,     // LINE
-    YKPlatformType_Wechat    // WECHAT
-} YKPlatformsType;
-// 支付状态
-typedef enum
-{
-    YKPayStatusOPEN,// 新建
-    YKPayStatusPAYED,// 已支付
-    YKPayStatusREFUND,// 已退款
-    YKPayStatusCANCELED // 已取消
-} YKPayStatus;
-// 货币类型
-typedef enum
-{
-    YKUSD,
-    YKHKD,
-    YKJPY,
-    YKGBP,
-    YKEUR
-} YKCurrencyType;
+// 微信相关
+#define kWxApp_id      @"wx5c8698af4ea9d013"
+#define kWxApp_Secret  @"6404466b271ee9732f15da181ed15ad1"
 
-#define PlatformsType(enum) [@[@"FACEBOOK",@"LINE",@"WECHAT"] objectAtIndex:enum]
-#define PayStatus(enum)     [@[@"OPEN",@"PAYED",@"REFUND",@"CANCELED"] objectAtIndex:enum]
-#define CurrencyType(enum)  [@[@"USD",@"HKD",@"JPY",@"GBP",@"EUR"] objectAtIndex:enum]
-
+// Paypal沙箱测试ID
+#define kPaypalClientID  @"ATdJEC70AgF4ae_jIaK8WiVMzxBiarr-Whf1dJMAWbGm8IVQG57o28GA_5hLKvNFIH9vIoPqG13MLQ8T"
 
 /* 测试域名 */
-#define kIFBaseUrl     @"http://192.168.0.105:8080"
+#define kIFBaseUrl     @"http://192.168.0.114:8081"
 /* 根据微信返回的code获取accessToken和openId接口 */
 #define kWechatGetToken                       @"https://api.weixin.qq.com/sns/oauth2/access_token?appid=%@&secret=%@&code=%@&grant_type=authorization_code"
 /* 根据微信返回的accessToken和openId来获取用户信息接口 */

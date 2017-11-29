@@ -31,17 +31,17 @@
 @interface YKPaypalRequest : YTKRequest
 
 - (instancetype)initWithPaypalId:(NSString *)paypalId
-                        orderNum:(NSString *)orderNum;
+                         orderId:(NSString *)orderId;
 @end
 
 @interface YKWechatPayRequest : YTKRequest
 
-- (instancetype)initWithOrderNumber:(NSString *)orderNumber;
+- (instancetype)initWithOrderId:(NSString *)orderId;
 @end
 
 @interface YKIAPPayRequest : YTKRequest
 
-- (instancetype)initWithOrderNumber:(NSString *)orderNumber
-                        receiptData:(NSString *)receiptData
-                  verifyEnvironment:(NSString *)verifyEnvironment;
+- (instancetype)initWithOrderId:(NSString *)orderId
+                    receiptData:(NSString *)receiptData
+              verifyEnvironment:(NSString *)verifyEnvironment;
 @end

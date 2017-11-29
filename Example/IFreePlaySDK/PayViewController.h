@@ -12,6 +12,6 @@
 
 @property (nonatomic, strong) NSDictionary *productDict;
 
-@property (nonatomic, strong) NSString *orderNumber;
+@property (nonatomic, strong) NSString *orderId;
 
 @end

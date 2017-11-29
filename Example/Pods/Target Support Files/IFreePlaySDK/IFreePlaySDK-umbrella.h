@@ -23,7 +23,6 @@
 #import "YKLoginRequest.h"
 #import "YKSDKManager.h"
 #import "YKUtilsMacro.h"
-#import "YKUtilTools.h"
 
 FOUNDATION_EXPORT double IFreePlaySDKVersionNumber;
 FOUNDATION_EXPORT const unsigned char IFreePlaySDKVersionString[];

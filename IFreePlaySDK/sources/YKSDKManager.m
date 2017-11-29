@@ -8,7 +8,6 @@
 
 
 #import "WXApi.h"
-#import "YKUtilTools.h"
 #import "YKSDKManager.h"
 #import "YKUtilsMacro.h"
 #import "PayPalMobile.h"
@@ -21,8 +20,6 @@
 {
     NSString *_gameId;
     NSString *_type;
-    NSString *_wxAppId;
-    NSString *_wxAppSecret;
 }
 
 @property (nonatomic, copy) void(^successBlock)(NSDictionary *data);
@@ -60,11 +57,24 @@
 
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
 {
-    return  [[FBSDKApplicationDelegate sharedInstance] application:application
-                                                           openURL:url
-                                                 sourceApplication:sourceApplication
-                                                        annotation:annotation];
+    BOOL result =  [[LineSDKLogin sharedInstance] handleOpenURL:url];
+    if (!result)
+    {
+        BOOL resultFb = [[FBSDKApplicationDelegate sharedInstance] application:application
+                                                                       openURL:url
+                                                             sourceApplication:sourceApplication
+                                                                    annotation:annotation];
+        if (!resultFb)
+        {
+            return [WXApi handleOpenURL:url delegate:self];
+        }
+        
+        return resultFb;
+    }
+    
+    return result;
 }
+
 - (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary *)options
 {
     BOOL result =  [[LineSDKLogin sharedInstance] handleOpenURL:url];
@@ -277,7 +287,7 @@
 #pragma mark -- 网络请求
 - (void)getWechatAccessTokenWithCode:(NSString *)code
 {
-    NSString *url =[NSString stringWithFormat:kWechatGetToken,_wxAppId,_wxAppSecret,code];
+    NSString *url =[NSString stringWithFormat:kWechatGetToken,kWxApp_id,kWxApp_Secret,code];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         NSURL *zoneUrl = [NSURL URLWithString:url];
         NSString *zoneStr = [NSString stringWithContentsOfURL:zoneUrl encoding:NSUTF8StringEncoding error:nil];
@@ -332,21 +342,11 @@
     }];
 }
 
-/* 获取orderNumber */
+/* 获取orderId */
 - (void)getOrderInfoWithParams:(NSDictionary *)params
                        success:(void (^)(NSDictionary *))successBlock
                        failure:(void (^)(NSError *))failureBlock
 {
-    
-    if ( [params objectForKey:@"totalPrice"] == 0)
-    {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"提示" message:@"商品总价不能为0" delegate:nil cancelButtonTitle:nil otherButtonTitles:@"确定", nil];
-            [alert show];
-        });
-        return;
-    }
-    
     YKRequestOrder *orderApi = [[YKRequestOrder alloc] initWithParams:params];
     [orderApi startWithCompletionBlockWithSuccess:^(__kindof YTKBaseRequest * _Nonnull request) {
         NSDictionary *data = request.responseObject;
@@ -356,39 +356,37 @@
         failureBlock(request.error);
     }];
 }
-/* 发起微信支付 通过orderNumber*/
-- (void)lunchWechatPayWithOrderNum:(NSString *)orderNum
+/* 发起微信支付 通过orderId*/
+- (void)lunchWechatPayWithOrderId:(NSString *)orderId viewController:(UIViewController *)vc
 {
-    YKWechatPayRequest *wechatApi = [[YKWechatPayRequest alloc] initWithOrderNumber:orderNum];
+    YKWechatPayRequest *wechatApi = [[YKWechatPayRequest alloc] initWithOrderId:orderId];
     [wechatApi startWithCompletionBlockWithSuccess:^(__kindof YTKBaseRequest * _Nonnull request) {
-        
-        NSDictionary *result = [request.responseObject objectForKey:@"data"];
-        //调起微信支付
-        PayReq* req             = [[PayReq alloc] init];
-        req.openID              = [result objectForKey:@"appid"];
-        req.partnerId           = [result objectForKey:@"mch_id"];
-        req.prepayId            = [result objectForKey:@"prepay_id"];
-        req.nonceStr            = [result objectForKey:@"nonce_str"];
-        NSDate* date = [NSDate dateWithTimeIntervalSinceNow:0];//获取当前时间0秒后的时间
-        NSTimeInterval time=[date timeIntervalSince1970] * 1000;// *1000 是精确到毫秒，不乘就是精确到秒
-        NSString *timeString = [NSString stringWithFormat:@"%.0f", time];
-        
-        req.timeStamp           = [timeString intValue];
-        req.package             = @"Sign=WXPay";
-        
-        NSString *newSign = [YKUtilTools createMD5SingForPay:req.openID partnerid:req.partnerId  prepayid:req.prepayId package:req.package noncestr:req.nonceStr timestamp:req.timeStamp];
-        req.sign                = newSign;
-        [WXApi sendReq:req];
+         NSDictionary *result = [request.responseObject objectForKey:@"data"];
+        if ([WXApi isWXAppInstalled])
+        {
+            //调起微信支付
+            PayReq* req             = [[PayReq alloc] init];
+            req.openID              = [result objectForKey:@"appId"];
+            req.partnerId           = [result objectForKey:@"partnerId"];
+            req.prepayId            = [result objectForKey:@"prepayId"];
+            req.nonceStr            = [result objectForKey:@"nonceStr"];
+            req.timeStamp           = [[result objectForKey:@"timeStamp"] intValue];
+            req.package             = [result objectForKey:@"packageValue"];
+            req.sign                = [result objectForKey:@"sign"];
+            [WXApi sendReq:req];
+        } else
+        {
+            [self setupAlertController:vc];
+        }
     } failure:^(__kindof YTKBaseRequest * _Nonnull request) {
         NSLog(@"%@",request.error);
     }];
 }
 
-
-/* 发起Paypal支付验证 通过orderNumber和PayPal回调返回的paypalId*/
-- (void)verifyPaypalWithPaypalId:(NSString *)paypalId orderNumber:(NSString *)orderNumber
+/* 发起Paypal支付验证 通过orderId和PayPal回调返回的paypalId*/
+- (void)verifyPaypalWithPaypalId:(NSString *)paypalId orderId:(NSString *)orderId
 {
-    YKPaypalRequest *paypalApi = [[YKPaypalRequest alloc] initWithPaypalId:paypalId orderNum:orderNumber];
+    YKPaypalRequest *paypalApi = [[YKPaypalRequest alloc] initWithPaypalId:paypalId orderId:orderId];
     
     [paypalApi startWithCompletionBlockWithSuccess:^(__kindof YTKBaseRequest * _Nonnull request) {
         
@@ -406,14 +404,14 @@
     }];
 }
 
-/* 发起AppleIAP支付验证 通过orderNumber和PayPal回调返回的paypalId
+/* 发起AppleIAP支付验证 通过orderId和PayPal回调返回的paypalId
  * orderNumber 订单号
  * receiptData apple支付凭证 base64字符串
  * verifyEnvironment 环境 如果是沙箱传Sandbox 如果是正式环境不传
  */
-- (void)verifyAppleIAPWithorderNumber:(NSString *)orderNumber receiptData:(NSString *)receiptData verifyEnvironment:(NSString *)verifyEnvironment
+- (void)verifyAppleIAPWithorderId:(NSString *)orderId receiptData:(NSString *)receiptData verifyEnvironment:(NSString *)verifyEnvironment
 {
-    YKIAPPayRequest *iapRequest = [[YKIAPPayRequest alloc] initWithOrderNumber:orderNumber receiptData:receiptData verifyEnvironment:verifyEnvironment];
+    YKIAPPayRequest *iapRequest = [[YKIAPPayRequest alloc] initWithOrderId:orderId receiptData:receiptData verifyEnvironment:verifyEnvironment];
     [iapRequest startWithCompletionBlockWithSuccess:^(__kindof YTKBaseRequest * _Nonnull request) {
         NSLog(@"%@",request.responseObject);
         if ([[request.responseObject objectForKey:@"data"] intValue] == 1) {

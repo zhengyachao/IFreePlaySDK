@@ -9,7 +9,6 @@
 #import "GTMBase64.h"
 #import <IFreePlaySDK/PayPalMobile.h>
 #import <IFreePlaySDK/YKSDKManager.h>
-#import <IFreePlaySDK/YKUtilTools.h>
 #import <IFreePlaySDK/YKLoginRequest.h>
 #import "PayViewController.h"
 #import <StoreKit/StoreKit.h>
@@ -130,7 +129,7 @@
 - (void)_onWechatPay:(UIButton *)button
 {
     // 发起微信支付
-    [[YKSDKManager shareManager] lunchWechatPayWithOrderNum:self.orderNumber];
+    [[YKSDKManager shareManager] lunchWechatPayWithOrderId:self.orderId viewController:self];
 }
 
 - (void)_onApplePayButton:(UIButton *)button
@@ -250,7 +249,7 @@
     NSData *data = [NSData dataWithContentsOfFile:[[[NSBundle mainBundle] appStoreReceiptURL] path]];
     NSString *receiptData = [[NSString alloc] initWithData:[GTMBase64 encodeData:data] encoding:NSUTF8StringEncoding];
     NSLog(@"%@",receiptData);
-    [[YKSDKManager shareManager] verifyAppleIAPWithorderNumber:self.orderNumber receiptData:receiptData verifyEnvironment:@"Sandbox"];
+    [[YKSDKManager shareManager] verifyAppleIAPWithOrderId:self.orderId receiptData:receiptData verifyEnvironment:@"Sandbox"];
     [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
 }
 
@@ -264,7 +263,7 @@
                  didCompletePayment:(PayPalPayment *)completedPayment
 {
     NSString *paypalId = [[completedPayment.confirmation objectForKey:@"response"] objectForKey:@"id"];
-    [[YKSDKManager shareManager] verifyPaypalWithPaypalId:paypalId orderNumber:self.orderNumber];
+    [[YKSDKManager shareManager] verifyPaypalWithPaypalId:paypalId orderId:self.orderId];
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
