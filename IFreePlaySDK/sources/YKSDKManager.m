@@ -15,8 +15,9 @@
 #import <LineSDK/LineSDK.h>
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
 #import <FBSDKLoginKit/FBSDKLoginKit.h>
+#import <FBSDKShareKit/FBSDKShareKit.h>
 
-@interface YKSDKManager ()<LineSDKLoginDelegate,WXApiDelegate>
+@interface YKSDKManager ()<LineSDKLoginDelegate,WXApiDelegate,FBSDKSharingDelegate,FBSDKAppInviteDialogDelegate>
 {
     NSString *_gameId;
     NSString *_type;
@@ -24,6 +25,7 @@
 
 @property (nonatomic, copy) void(^successBlock)(NSDictionary *data);
 @property (nonatomic, copy) void(^failureBlock)(NSError *error);
+@property (nonatomic, copy) void(^stateChangedHandler)(YKResponseState state, NSError *error);
 
 @end
 @implementation YKSDKManager
@@ -150,6 +152,85 @@
              }
          }
      }];
+}
+
+#pragma mark -- Facebook分享
+/**
+ *  @param url   分享的链接
+ *  @param vc    分享所在页面的控制器
+ *  @param stateChangedHandler    状态变更回调处理
+ */
+- (void)YKSetupShareParamsByUrl:(NSURL *)url currentVc:(UIViewController *)vc handler:(YKShareStateChangedHandler)stateChangedHandler
+{
+    self.stateChangedHandler = stateChangedHandler;
+    FBSDKShareLinkContent *content = [[FBSDKShareLinkContent alloc] init];
+    content.contentURL = url;
+    
+//    FBSDKShareLinkContent *content = [[FBSDKShareLinkContent alloc] init];
+//    content.contentURL = [NSURL URLWithString:@"http://developers.facebook.com"];
+    [FBSDKShareDialog showFromViewController:vc
+                                 withContent:content
+                                    delegate:self];
+}
+
+- (void)YKSetupInviteParamsByUrl:(NSURL *)url currentVc:(UIViewController *)vc handler:(YKShareStateChangedHandler)stateChangedHandler {
+    self.stateChangedHandler = stateChangedHandler;
+    FBSDKAppInviteContent *inviteContent = [[FBSDKAppInviteContent alloc] init];
+    inviteContent.appLinkURL = url;
+    inviteContent.appInvitePreviewImageURL = [NSURL URLWithString:@"http://i0.cy.com/xtl3d/pic/2014/10/17/1.png"];
+    
+    FBSDKAppInviteDialog *dialog = [[FBSDKAppInviteDialog alloc] init];
+    dialog.content = inviteContent;
+    dialog.fromViewController = vc;
+    dialog.delegate = self;
+    
+    [dialog show];
+}
+    
+- (void)appInviteDialog:(FBSDKAppInviteDialog *)appInviteDialog didCompleteWithResults:(NSDictionary *)results
+{
+    if (results == nil)
+    {
+        self.stateChangedHandler(SSDKResponseStateCancel, nil);
+    } else {
+        self.stateChangedHandler(SSDKResponseStateSuccess, nil);
+    }
+}
+
+- (void)appInviteDialog:(FBSDKAppInviteDialog *)appInviteDialog didFailWithError:(NSError *)error
+{
+    self.stateChangedHandler(SSDKResponseStateFail, error);
+}
+
+#pragma mark - FaceBook Share Delegate
+- (void)sharer:(id<FBSDKSharing>)sharer didCompleteWithResults:(NSDictionary *)results {
+    NSString *postId = results[@"postId"];
+    FBSDKShareDialog *dialog = (FBSDKShareDialog *)sharer;
+    if (dialog.mode == FBSDKShareDialogModeBrowser && (postId == nil || [postId isEqualToString:@""])) {
+        // 如果使用webview分享的，但postId是空的，
+        // 这种情况是用户点击了『完成』按钮，并没有真的分享
+        self.stateChangedHandler(SSDKResponseStateCancel, nil);
+    } else {
+        self.stateChangedHandler(SSDKResponseStateSuccess, nil);
+    }
+}
+
+- (void)sharer:(id<FBSDKSharing>)sharer didFailWithError:(NSError *)error {
+    FBSDKShareDialog *dialog = (FBSDKShareDialog *)sharer;
+    if (error == nil && dialog.mode == FBSDKShareDialogModeNative) {
+        // 如果使用原生登录失败，但error为空，那是因为用户没有安装Facebook app
+        // 重设dialog的mode，再次弹出对话框
+        dialog.mode = FBSDKShareDialogModeBrowser;
+        [dialog show];
+    } else
+    {
+        // 分享失败
+        self.stateChangedHandler(SSDKResponseStateFail, error);
+    }
+}
+
+- (void)sharerDidCancel:(id<FBSDKSharing>)sharer {
+    self.stateChangedHandler(SSDKResponseStateCancel, nil);
 }
 
 #pragma mark -- Line登录相关&LineSDKLoginDelegate

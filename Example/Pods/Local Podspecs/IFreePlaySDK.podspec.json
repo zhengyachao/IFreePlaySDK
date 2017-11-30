@@ -1,6 +1,6 @@
 {
   "name": "IFreePlaySDK",
-  "version": "1.1.1",
+  "version": "1.2.3",
   "summary": "集成facebook登录，line登录，微信登录，微信支付，paypal支付，苹果IAP内购支付并打包成静态库",
   "description": "TODO: 集成facebook登录，line登录，微信登录，微信支付，paypal支付，苹果IAP内购支付并打包成静态库",
   "homepage": "https://github.com/zhengyachao/IFreePlaySDK",
@@ -13,7 +13,7 @@
   },
   "source": {
     "git": "https://github.com/zhengyachao/IFreePlaySDK.git",
-    "tag": "1.1.1"
+    "tag": "1.2.3"
   },
   "platforms": {
     "ios": "8.0"

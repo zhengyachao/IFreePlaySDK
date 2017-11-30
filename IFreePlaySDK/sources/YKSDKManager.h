@@ -10,9 +10,6 @@
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
 
-typedef void (^YKSDKManagerRequestSuccess)(NSDictionary *data);
-typedef void (^YKSDKManagerRequestFailed)(NSError *error);
-
 // 三方登录的平台类型
 typedef enum
 {
@@ -20,6 +17,21 @@ typedef enum
     YKPlatformType_Line,     // LINE
     YKPlatformType_Wechat    // WECHAT
 } YKPlatformsType;
+
+/**
+ *  分享回调状态
+ */
+typedef NS_ENUM(NSUInteger, YKResponseState)
+{
+    /* 分享成功 */
+    SSDKResponseStateSuccess    = 0,
+    
+    /* 分享失败 */
+    SSDKResponseStateFail       = 1,
+    
+    /* 取消分享 */
+    SSDKResponseStateCancel     = 2
+};
 
 // 支付状态
 typedef enum
@@ -43,6 +55,10 @@ typedef enum
 #define PlatformsType(enum) [@[@"FACEBOOK",@"LINE",@"WECHAT"] objectAtIndex:enum]
 #define PayStatus(enum)     [@[@"OPEN",@"PAYED",@"REFUND",@"CANCELED"] objectAtIndex:enum]
 #define CurrencyType(enum)  [@[@"CNY",@"USD",@"HKD",@"JPY",@"GBP",@"EUR"] objectAtIndex:enum]
+
+typedef void (^YKSDKManagerRequestSuccess)(NSDictionary *data);
+typedef void (^YKSDKManagerRequestFailed)(NSError *error);
+typedef void (^YKShareStateChangedHandler)(YKResponseState state, NSError *error);
 
 @interface YKSDKManager : NSObject
 
@@ -70,6 +86,18 @@ typedef enum
                    Type:(NSString *)type
                 success:(void (^)(NSDictionary *))successBlock
                 failure:(void (^)(NSError *))failureBlock;
+
+#pragma mark -- Facebook分享
+/**
+ *  分享内容
+ *
+ *  @param url   分享的链接
+ *  @param vc    分享所在页面的控制器
+ *  @param stateChangedHandler    状态变更回调处理
+ */
+- (void)YKSetupShareParamsByUrl:(NSURL *)url currentVc:(UIViewController *)vc handler:(YKShareStateChangedHandler)stateChangedHandler;
+
+- (void)YKSetupInviteParamsByUrl:(NSURL *)url currentVc:(UIViewController *)vc handler:(YKShareStateChangedHandler)stateChangedHandler;
 
 #pragma mark -- Line登录
 /* 登录Line */
