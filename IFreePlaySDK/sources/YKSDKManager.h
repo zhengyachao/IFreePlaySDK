@@ -41,6 +41,7 @@ typedef enum
     YKPayStatusREFUND,// 已退款
     YKPayStatusCANCELED // 已取消
 } YKPayStatus;
+
 // 货币类型
 typedef enum
 {
@@ -51,6 +52,13 @@ typedef enum
     YKGBP,        // 英镑
     YKEUR         // 欧元
 } YKCurrencyType;
+
+// 货币类型
+typedef enum
+{
+    YKSceneSession = 0,        // 发送给好友
+    YKSceneTimeline = 1        // 发送到朋友圈
+} YKWechatScene;
 
 #define PlatformsType(enum) [@[@"FACEBOOK",@"LINE",@"WECHAT"] objectAtIndex:enum]
 #define PayStatus(enum)     [@[@"OPEN",@"PAYED",@"REFUND",@"CANCELED"] objectAtIndex:enum]
@@ -66,7 +74,10 @@ typedef void (^YKShareStateChangedHandler)(YKResponseState state, NSError *error
 
 #pragma mark -- FaceBook登录
 /* 初始化*/
-- (void)initSDKForApplication:(UIApplication *)application launchOptions:(NSDictionary *)launchOptions appId:(NSString *)appId clientId:(NSString *)clientIds;
+- (void)initSDKForApplication:(UIApplication *)application
+                launchOptions:(NSDictionary *)launchOptions
+                        appId:(NSString *)appId
+                     clientId:(NSString *)clientIds;
 
 /* 记录APP激活数据统计 */
 + (void)activateApp;
@@ -75,9 +86,9 @@ typedef void (^YKShareStateChangedHandler)(YKResponseState state, NSError *error
             openURL:(NSURL *)url
   sourceApplication:(NSString *)sourceApplication
          annotation:(id)annotation;
-    
+
 - (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary *)options;
-    
+
 - (BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url;
 
 /* 登录Facebook读取用户权限 */
@@ -90,7 +101,6 @@ typedef void (^YKShareStateChangedHandler)(YKResponseState state, NSError *error
 #pragma mark -- Facebook分享
 /**
  *  分享内容
- *
  *  @param url   分享的链接
  *  @param vc    分享所在页面的控制器
  *  @param stateChangedHandler    状态变更回调处理
@@ -98,15 +108,6 @@ typedef void (^YKShareStateChangedHandler)(YKResponseState state, NSError *error
 - (void)YKSetupShareParamsByUrl:(NSURL *)url currentVc:(UIViewController *)vc handler:(YKShareStateChangedHandler)stateChangedHandler;
 
 - (void)YKSetupInviteParamsByUrl:(NSURL *)url currentVc:(UIViewController *)vc handler:(YKShareStateChangedHandler)stateChangedHandler;
-
-#pragma mark -- Line登录
-/* 登录Line */
-- (void)startLoginToLineGameId:(NSString *)gameId
-                          Type:(NSString *)type
-                       success:(void (^)(NSDictionary *))successBlock
-                       failure:(void (^)(NSError *))failureBlock;;
-/* 唤起Line */
-- (BOOL)handleOpenURL:(NSURL *)url;
 
 #pragma mark -- 微信登录&微信支付
 /* WXApi的成员函数，向微信终端程序注册第三方应用 */
@@ -132,11 +133,26 @@ typedef void (^YKShareStateChangedHandler)(YKResponseState state, NSError *error
                        success:(void (^)(NSDictionary *))successBlock
                        failure:(void (^)(NSError *))failureBlock;
 
-/* 发起微信支付 通过orderId*/
-- (void)lunchWechatPayWithOrderId:(NSString *)orderId viewController:(UIViewController *)vc;
 
-/* 发起Paypal支付验证 通过orderId和PayPal回调返回的paypalId*/
-- (void)verifyPaypalWithPaypalId:(NSString *)paypalId orderId:(NSString *)orderId;
+#pragma mark -- 微信分享朋友 && 朋友圈
+/**
+ *  分享内容
+ *  @param title   分享的标题
+ *  @param description   分享的描述
+ *  @param image   分享的缩略图
+ *  @param url   分享的链接
+ *  @param vc    分享所在页面的控制器
+ *  @param stateChangedHandler    状态变更回调处理
+ */
+- (void)YKWechatShareParamsByTitle:(NSString *)title
+                       description:(NSString *)description
+                             image:(UIImage *)image
+                               url:(NSString *)url
+                             scene:(int)scene
+                         currentVc:(UIViewController *)vc
+                           handler:(YKShareStateChangedHandler)stateChangedHandler;
+
+#pragma mark -- Apple支付
 
 /* 发起AppleIAP支付验证 通过orderId和PayPal回调返回的paypalId
  * orderId 订单号

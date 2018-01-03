@@ -2,10 +2,10 @@
 Pod::Spec.new do |s|
   s.name             = 'IFreePlaySDK'
   s.version          = '1.2.3'
-  s.summary          = '集成facebook登录，line登录，微信登录，微信支付，paypal支付，苹果IAP内购支付并打包成静态库'
+  s.summary          = '集成facebook登录/分享／邀请，微信登录／分享，苹果IAP内购支付并打包成静态库'
 
   s.description      = <<-DESC
-TODO: 集成facebook登录，line登录，微信登录，微信支付，paypal支付，苹果IAP内购支付并打包成静态库
+TODO: 集成facebook登录/分享／邀请，微信登录／分享，苹果IAP内购支付并打包成静态库
                        DESC
 
   s.homepage         = 'https://github.com/zhengyachao/IFreePlaySDK'
@@ -19,10 +19,9 @@ TODO: 集成facebook登录，line登录，微信登录，微信支付，paypal�
 
   s.source_files = 'IFreePlaySDK/sources/**/*.{h,m}'
 
-  s.public_header_files = 'IFreePlaySDK/sources/**/*.h','IFreePlaySDK/sources/LineSDK.framework/**/*.h'
+  s.public_header_files = 'IFreePlaySDK/sources/**/*.h'
 
-  s.vendored_libraries  = 'IFreePlaySDK/libs/libWeChatSDK.a','IFreePlaySDK/libs/libPayPalMobile.a'
-  s.vendored_frameworks = 'IFreePlaySDK/libs/LineSDK.framework'
+  s.vendored_libraries  = 'IFreePlaySDK/libs/libWeChatSDK.a'
 
   s.libraries = 'c++', 'sqlite3', 'z'
   s.frameworks = 'UIKit', 'Foundation', 'Security','CoreTelephony', 'SystemConfiguration','CFNetwork','WebKit','PassKit','MobileCoreServices','AddressBook','CoreGraphics','CoreLocation','Accelerate','AudioToolbox','CoreMedia','MessageUI','SafariServices'

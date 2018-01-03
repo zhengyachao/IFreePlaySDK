@@ -1,7 +1,4 @@
-//
 //  LoginViewController.m
-//  ZYCTestDemo
-//
 //  Created by ifreeplay on 2017/8/7.
 //  Copyright © 2017年 ifreeplay. All rights reserved.
 //
@@ -30,10 +27,8 @@
     [self createFBLoginButton];
     [self createFBShareButton];
     [self createFBInvitedButton];
-    [self createLineLoginButton];
-    [self createLineShareTextButton];
-    [self createLineShareImageButton];
     [self createWechatLoginButton];
+    [self createWechatShareButton];
     [self createProductListButton];
 }
 
@@ -48,7 +43,7 @@
 {
     UIButton *fbLogin = [UIButton buttonWithType:UIButtonTypeCustom];
     fbLogin.frame = CGRectMake(20, 10, self.view.frame.size.width - 40, 44);
-    fbLogin.backgroundColor = [UIColor lightGrayColor];
+    fbLogin.backgroundColor = [UIColor colorWithRed:255/255.0 green:143/255.0 blue:22/255.0 alpha:1.0];
     [fbLogin setTitle:@"FaceBook登录" forState:UIControlStateNormal];
     [fbLogin setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     fbLogin.titleLabel.font = [UIFont systemFontOfSize:16.0f];
@@ -61,9 +56,9 @@
 - (void)createFBShareButton {
     UIButton *fbLogin = [UIButton buttonWithType:UIButtonTypeCustom];
     fbLogin.frame = CGRectMake(20, 10 * 2 + 44, self.view.frame.size.width - 40, 44);
-    fbLogin.backgroundColor = [UIColor lightGrayColor];
+    fbLogin.backgroundColor = [UIColor colorWithRed:255/255.0 green:143/255.0 blue:22/255.0 alpha:1.0];
     [fbLogin setTitle:@"FaceBook分享" forState:UIControlStateNormal];
-    [fbLogin setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
+    [fbLogin setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     fbLogin.titleLabel.font = [UIFont systemFontOfSize:16.0f];
     [fbLogin addTarget:self action:@selector(_onShareFaceBook:) forControlEvents:UIControlEventTouchUpInside];
     fbLogin.layer.cornerRadius = 5.0f;
@@ -74,9 +69,9 @@
 - (void)createFBInvitedButton {
     UIButton *fbLogin = [UIButton buttonWithType:UIButtonTypeCustom];
     fbLogin.frame = CGRectMake(20, 10 * 3 + 44 * 2, self.view.frame.size.width - 40, 44);
-    fbLogin.backgroundColor = [UIColor lightGrayColor];
+    fbLogin.backgroundColor = [UIColor colorWithRed:255/255.0 green:143/255.0 blue:22/255.0 alpha:1.0];
     [fbLogin setTitle:@"FaceBook邀请好友" forState:UIControlStateNormal];
-    [fbLogin setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
+    [fbLogin setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     fbLogin.titleLabel.font = [UIFont systemFontOfSize:16.0f];
     [fbLogin addTarget:self action:@selector(_onInviteFacebook:) forControlEvents:UIControlEventTouchUpInside];
     fbLogin.layer.cornerRadius = 5.0f;
@@ -84,57 +79,29 @@
     [self.view addSubview:fbLogin];
 }
 
-/* 自定义Line登录按钮 */
-- (void)createLineLoginButton
-{
-    UIButton *lineLogin = [UIButton buttonWithType:UIButtonTypeCustom];
-    lineLogin.frame = CGRectMake(20, 10 * 4 + 44 * 3 , self.view.frame.size.width - 40, 44);
-    lineLogin.backgroundColor = [UIColor lightGrayColor];
-    [lineLogin setTitle:@"Line登录" forState:UIControlStateNormal];
-    [lineLogin setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    lineLogin.titleLabel.font = [UIFont systemFontOfSize:16.0f];
-    [lineLogin addTarget:self action:@selector(_onLoginLine:) forControlEvents:UIControlEventTouchUpInside];
-    lineLogin.layer.cornerRadius = 5.0f;
-    
-    [self.view addSubview:lineLogin];
-}
-
-- (void)createLineShareTextButton {
-    UIButton *lineLogin = [UIButton buttonWithType:UIButtonTypeCustom];
-    lineLogin.frame = CGRectMake(20, 10 * 5 + 44 * 4 , self.view.frame.size.width - 40, 44);
-    lineLogin.backgroundColor = [UIColor lightGrayColor];
-    [lineLogin setTitle:@"Line文本分享" forState:UIControlStateNormal];
-    [lineLogin setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
-    lineLogin.titleLabel.font = [UIFont systemFontOfSize:16.0f];
-    [lineLogin addTarget:self action:@selector(_onShareTextForLine:) forControlEvents:UIControlEventTouchUpInside];
-    lineLogin.layer.cornerRadius = 5.0f;
-    
-    [self.view addSubview:lineLogin];
-}
-
-- (void)createLineShareImageButton {
-    UIButton *lineLogin = [UIButton buttonWithType:UIButtonTypeCustom];
-    lineLogin.frame = CGRectMake(20, 10 * 6 + 44 * 5 , self.view.frame.size.width - 40, 44);
-    lineLogin.backgroundColor = [UIColor lightGrayColor];
-    [lineLogin setTitle:@"Line图片分享" forState:UIControlStateNormal];
-    [lineLogin setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
-    lineLogin.titleLabel.font = [UIFont systemFontOfSize:16.0f];
-    [lineLogin addTarget:self action:@selector(_onShareImageForLine:) forControlEvents:UIControlEventTouchUpInside];
-    lineLogin.layer.cornerRadius = 5.0f;
-    
-    [self.view addSubview:lineLogin];
-}
-
 /* 自定义微信登录按钮 */
 - (void)createWechatLoginButton
 {
     UIButton *wxBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    wxBtn.frame = CGRectMake(20, 10 * 7 + 44 * 6, self.view.frame.size.width - 40, 44);
-    wxBtn.backgroundColor = [UIColor lightGrayColor];
+    wxBtn.frame = CGRectMake(20, 10 * 4 + 44 * 3, self.view.frame.size.width - 40, 44);
+    wxBtn.backgroundColor = [UIColor colorWithRed:255/255.0 green:143/255.0 blue:22/255.0 alpha:1.0];
     [wxBtn setTitle:@"微信授权登录" forState:UIControlStateNormal];
-    [wxBtn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    [wxBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     wxBtn.titleLabel.font = [UIFont systemFontOfSize:16.0f];
     [wxBtn addTarget:self action:@selector(_onLoginWeChat:) forControlEvents:UIControlEventTouchUpInside];
+    wxBtn.layer.cornerRadius = 5.0f;
+    
+    [self.view addSubview:wxBtn];
+}
+/* 自定义微信分享按钮 */
+- (void)createWechatShareButton {
+    UIButton *wxBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    wxBtn.frame = CGRectMake(20, 10 * 5 + 44 * 4, self.view.frame.size.width - 40, 44);
+    wxBtn.backgroundColor = [UIColor colorWithRed:255/255.0 green:143/255.0 blue:22/255.0 alpha:1.0];
+    [wxBtn setTitle:@"微信分享" forState:UIControlStateNormal];
+    [wxBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    wxBtn.titleLabel.font = [UIFont systemFontOfSize:16.0f];
+    [wxBtn addTarget:self action:@selector(_onShareWeChat:) forControlEvents:UIControlEventTouchUpInside];
     wxBtn.layer.cornerRadius = 5.0f;
     
     [self.view addSubview:wxBtn];
@@ -144,7 +111,6 @@
 {
     UIButton *payLogin = [UIButton buttonWithType:UIButtonTypeCustom];
     CGFloat minHeight = self.view.frame.size.height - 64;
-    
     payLogin.frame = CGRectMake(20, minHeight - 44 * 2, self.view.frame.size.width - 40, 44);
     payLogin.backgroundColor = [UIColor colorWithRed:255/255.0 green:143/255.0 blue:22/255.0 alpha:1.0];
     [payLogin setTitle:@"获取产品列表" forState:UIControlStateNormal];
@@ -193,76 +159,18 @@
     [[YKSDKManager shareManager] YKSetupInviteParamsByUrl:[NSURL URLWithString:@"https://d3uu10x6fsg06w.cloudfront.net/shareitexampleapp/liking/index.html"] currentVc:self handler:^(YKResponseState state, NSError *error) {
         switch (state) {
             case 0:
-            [self showShareHandleBack:@"邀请成功"];
-            break;
+                [self showShareHandleBack:@"邀请成功"];
+                break;
             case 1:
-            [self showShareHandleBack:@"邀请失败"];
-            break;
+                [self showShareHandleBack:@"邀请失败"];
+                break;
             case 2:
-            [self showShareHandleBack:@"取消邀请"];
+                [self showShareHandleBack:@"取消邀请"];
             default:
-            break;
+                break;
         }
     }];
 }
-
-/* 点击登录line */
-- (void)_onLoginLine:(UIButton *)button
-{
-    [[YKSDKManager shareManager] startLoginToLineGameId:@"2" Type:PlatformsType(YKPlatformType_Line)
-                                                success:^(NSDictionary *data)
-     {
-         [self showCallbackInfoData:@"Line登录回调信息" dataResult:data];
-     } failure:^(NSError *error)
-     {
-         [self showCallbackErrorData:@"Line登录错误信息" error:error];
-     }];
-}
-
-- (void)_onShareTextForLine:(UIButton *)button {
-    [self shareText:@"测试"];
-}
-
-- (void)_onShareImageForLine:(UIButton *)button {
-    [self shareImage:@"https://ww4.sinaimg.cn/bmiddle/005Q8xv4gw1evlkov50xuj30go0a6mz3.jpg"];
-}
-
-//是否有安装Line
-- (BOOL)canShareToLine
-{
-    BOOL isLine = [[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"line://"]];
-    if (!isLine) {
-        UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"提示" message:@"暂未安装Line" preferredStyle:UIAlertControllerStyleAlert];
-        UIAlertAction *actionConfirm = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:nil];
-        [alert addAction:actionConfirm];
-        [self presentViewController:alert animated:YES completion:nil];
-    }
-    return isLine;
-}
-//分享文字
-- (void)shareText:(NSString*)text {
-    NSString*contentKey = (__bridge NSString *)CFURLCreateStringByAddingPercentEscapes(NULL,(CFStringRef)text,NULL,(CFStringRef)@"!*'();:@&=+$,/?%#[]",kCFStringEncodingUTF8);
-    NSString*contentType =@"text";
-    NSString*urlString = [NSString stringWithFormat:@"line://msg/%@/%@",contentType, contentKey];
-    
-    [[UIApplication sharedApplication]openURL:[NSURL URLWithString:urlString]];
-}
-//分享图片
-- (void)shareImage:(NSString *)imageUrl
-{
-    UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-    NSData *data = [NSData dataWithContentsOfURL:[NSURL URLWithString:imageUrl]];
-    UIImage *image = [UIImage imageWithData:data];
-    [pasteboard setData:UIImageJPEGRepresentation(image, 0.9) forPasteboardType:@"public.jpeg"];
-    NSString *contentType =@"image";
-    
-    NSString *contentKey = [pasteboard.name stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-    
-    NSString *urlString = [NSString stringWithFormat:@"line://msg/%@/%@",contentType, contentKey];
-    
-    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:urlString]];
-}
-
 
 /* 点击登录微信 */
 - (void)_onLoginWeChat:(UIButton *)button
@@ -278,6 +186,31 @@
      {
          [self showCallbackErrorData:@"微信登录错误信息" error:error];
      }];
+}
+
+- (void)_onShareWeChat:(UIButton *)button {
+    NSData *netData = [NSData dataWithContentsOfURL:[NSURL URLWithString: @"http://leapkids-dev.oss-cn-beijing.aliyuncs.com/course/cover/4779401786cd45de94d032f105642ce5.jpg?x-oss-process=style/150_150"]];
+    UIImage *netImage = [UIImage imageWithData:netData];
+    [[YKSDKManager shareManager] YKWechatShareParamsByTitle:@"测试微信分享"
+                                                description:@"测试微信分享"
+                                                      image:netImage
+                                                        url:@"https://d3uu10x6fsg06w.cloudfront.net/shareitexampleapp/liking/index.html"
+                                                      scene:YKSceneSession
+                                                  currentVc:self
+                                                    handler:^(YKResponseState state, NSError *error) {
+                                                        switch (state) {
+                                                            case 0:
+                                                                [self showShareHandleBack:@"分享成功"];
+                                                                break;
+                                                            case 1:
+                                                                [self showShareHandleBack:@"分享失败"];
+                                                                break;
+                                                            case 2:
+                                                                [self showShareHandleBack:@"取消分享"];
+                                                            default:
+                                                                break;
+                                                        }
+                                                    }];
 }
 
 - (void)_onJumpProductVC:(UIButton *)button

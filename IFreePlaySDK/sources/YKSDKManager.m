@@ -10,14 +10,12 @@
 #import "WXApi.h"
 #import "YKSDKManager.h"
 #import "YKUtilsMacro.h"
-#import "PayPalMobile.h"
 #import "YKLoginRequest.h"
-#import <LineSDK/LineSDK.h>
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
 #import <FBSDKLoginKit/FBSDKLoginKit.h>
 #import <FBSDKShareKit/FBSDKShareKit.h>
 
-@interface YKSDKManager ()<LineSDKLoginDelegate,WXApiDelegate,FBSDKSharingDelegate,FBSDKAppInviteDialogDelegate>
+@interface YKSDKManager ()<WXApiDelegate,FBSDKSharingDelegate,FBSDKAppInviteDialogDelegate>
 {
     NSString *_gameId;
     NSString *_type;
@@ -47,8 +45,6 @@
     
     [[FBSDKApplicationDelegate sharedInstance] application:application didFinishLaunchingWithOptions:launchOptions];
     
-    [PayPalMobile initializeWithClientIdsForEnvironments:@{PayPalEnvironmentProduction :clientIds,
-                                                           PayPalEnvironmentSandbox : clientIds}];
     [WXApi registerApp:appId enableMTA:NO];
 }
 
@@ -59,44 +55,32 @@
 
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
 {
-    BOOL result =  [[LineSDKLogin sharedInstance] handleOpenURL:url];
-    if (!result)
+    BOOL resultFb = [[FBSDKApplicationDelegate sharedInstance] application:application
+                                                                   openURL:url
+                                                         sourceApplication:sourceApplication
+                                                                annotation:annotation];
+    if (!resultFb)
     {
-        BOOL resultFb = [[FBSDKApplicationDelegate sharedInstance] application:application
-                                                                       openURL:url
-                                                             sourceApplication:sourceApplication
-                                                                    annotation:annotation];
-        if (!resultFb)
-        {
-            return [WXApi handleOpenURL:url delegate:self];
-        }
-        
-        return resultFb;
+        return [WXApi handleOpenURL:url delegate:self];
     }
     
-    return result;
+    return resultFb;
 }
 
 - (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary *)options
 {
-    BOOL result =  [[LineSDKLogin sharedInstance] handleOpenURL:url];
-    if (!result)
+    BOOL resultFb = [[FBSDKApplicationDelegate sharedInstance] application:app
+                                                                   openURL:url
+                                                         sourceApplication:options[UIApplicationOpenURLOptionsSourceApplicationKey]
+                                                                annotation:options[UIApplicationOpenURLOptionsAnnotationKey]];
+    if (!resultFb)
     {
-        BOOL resultFb = [[FBSDKApplicationDelegate sharedInstance] application:app
-                                                                       openURL:url
-                                 sourceApplication:options[UIApplicationOpenURLOptionsSourceApplicationKey]
-                                                annotation:options[UIApplicationOpenURLOptionsAnnotationKey]];
-        if (!resultFb)
-        {
-            return [WXApi handleOpenURL:url delegate:self];
-        }
-            
-        return resultFb;
+        return [WXApi handleOpenURL:url delegate:self];
     }
-        
-    return result;
-}
     
+    return resultFb;
+}
+
 - (BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url
 {
     return [WXApi handleOpenURL:url delegate:self];
@@ -166,8 +150,6 @@
     FBSDKShareLinkContent *content = [[FBSDKShareLinkContent alloc] init];
     content.contentURL = url;
     
-//    FBSDKShareLinkContent *content = [[FBSDKShareLinkContent alloc] init];
-//    content.contentURL = [NSURL URLWithString:@"http://developers.facebook.com"];
     [FBSDKShareDialog showFromViewController:vc
                                  withContent:content
                                     delegate:self];
@@ -186,7 +168,7 @@
     
     [dialog show];
 }
-    
+
 - (void)appInviteDialog:(FBSDKAppInviteDialog *)appInviteDialog didCompleteWithResults:(NSDictionary *)results
 {
     if (results == nil)
@@ -206,7 +188,7 @@
 - (void)sharer:(id<FBSDKSharing>)sharer didCompleteWithResults:(NSDictionary *)results {
     NSString *postId = results[@"postId"];
     FBSDKShareDialog *dialog = (FBSDKShareDialog *)sharer;
-    if (dialog.mode == FBSDKShareDialogModeBrowser && (postId == nil || [postId isEqualToString:@""])) {
+    if (dialog.mode == FBSDKShareDialogModeNative && (postId == nil || [postId isEqualToString:@""])) {
         // 如果使用webview分享的，但postId是空的，
         // 这种情况是用户点击了『完成』按钮，并没有真的分享
         self.stateChangedHandler(SSDKResponseStateCancel, nil);
@@ -233,49 +215,6 @@
     self.stateChangedHandler(SSDKResponseStateCancel, nil);
 }
 
-#pragma mark -- Line登录相关&LineSDKLoginDelegate
-- (void)startLoginToLineGameId:(NSString *)gameId
-                          Type:(NSString *)type
-                       success:(void (^)(NSDictionary *))successBlock
-                       failure:(void (^)(NSError *))failureBlock
-{
-    self.successBlock = successBlock;
-    self.failureBlock = failureBlock;
-    _gameId = gameId;
-    _type = type;
-    
-    if ([[LineSDKLogin sharedInstance] canLoginWithLineApp])
-    {
-        [[LineSDKLogin sharedInstance] startLogin];
-    } else
-    {
-        [[LineSDKLogin sharedInstance] startWebLoginWithSafariViewController:YES];
-    }
-    [LineSDKLogin sharedInstance].delegate = self;
-}
-
-/* 唤起Line */
-- (BOOL)handleOpenURL:(NSURL *)url
-{
-    return [[LineSDKLogin sharedInstance] handleOpenURL:url];
-}
-
-/* LineSDKLoginDelegate方法 */
-- (void)didLogin:(LineSDKLogin *)login
-      credential:(nullable LineSDKCredential *)credential
-         profile:(nullable LineSDKProfile *)profile
-           error:(nullable NSError *)error
-{
-    if (error) {
-        NSLog(@"Error: %@", error.localizedDescription);
-    }
-    else {
-        NSString * userID = profile.userID;
-        NSString * displayName = profile.displayName;
-        NSString *headPortraitUrl = [NSString stringWithFormat:@"%@", profile.pictureURL];
-        [self postServiceName:displayName openId:userID headPortraitUrl:headPortraitUrl];    }
-}
-
 #pragma mark -- 微信登录
 /* WXApi的成员函数，向微信终端程序注册第三方应用 */
 - (void)registerAppForWechat:(NSString *)wxAppid
@@ -293,10 +232,7 @@
  * 发送一个sendReq后，收到微信的回应
  */
 - (void)onResp:(BaseResp *)resp
-{
-    NSString *strTitle;
-    NSString *strMsg = [NSString stringWithFormat:@"errcode:%d", resp.errCode];
-    
+{    
     if ([resp isKindOfClass:[SendAuthResp class]]) //判断是否为授权请求，否则与微信支付等功能发生冲突
     {
         SendAuthResp *aresp = (SendAuthResp *)resp;
@@ -306,28 +242,19 @@
         }
     }
     
-    if ([resp isKindOfClass:[PayResp class]])
-    {
-        //支付返回结果，实际支付结果需要去微信服务器端查询
-        strTitle = [NSString stringWithFormat:@"支付结果"];
+    if([resp isKindOfClass:[SendMessageToWXResp class]]) {
         
-        switch (resp.errCode)
-        {
+        switch (resp.errCode) {
             case WXSuccess:
             {
-                strMsg = @"支付结果：成功！";
-                NSLog(@"支付成功－PaySuccess，retcode = %d", resp.errCode);
-                UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"支付成功" message:nil delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
-                [alertView show];
+                NSLog(@"success");
             }
                 break;
-                
+            case WXErrCodeUserCancel:
+                break;
             default:
             {
-                strMsg = [NSString stringWithFormat:@"支付结果：失败"];
-                NSLog(@"错误，retcode = %d, retstr = %@", resp.errCode, resp.errStr);
-                UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"支付失败" message:nil delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
-                [alertView show];
+                NSLog(@"failure");
             }
                 break;
         }
@@ -364,6 +291,31 @@
     UIAlertAction *actionConfirm = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:nil];
     [alert addAction:actionConfirm];
     [vc presentViewController:alert animated:YES completion:nil];
+}
+
+- (void)YKWechatShareParamsByTitle:(NSString *)title
+                       description:(NSString *)description
+                             image:(UIImage *)image
+                               url:(NSString *)url
+                             scene:(int)scene
+                         currentVc:(UIViewController *)vc
+                           handler:(YKShareStateChangedHandler)stateChangedHandler
+{
+    WXMediaMessage *message = [WXMediaMessage message];
+    message.title = title;
+    message.description = description;
+    [message setThumbImage:image];
+    
+    WXWebpageObject *webpage = [WXWebpageObject object];
+    webpage.webpageUrl = url;
+    message.mediaObject = webpage;
+    
+    SendMessageToWXReq *req = [[SendMessageToWXReq alloc] init];
+    req.bText = NO;
+    req.message = message;
+    req.scene = scene;
+    
+    [WXApi sendReq:req];
 }
 
 #pragma mark -- 网络请求
@@ -441,54 +393,8 @@
         failureBlock(request.error);
     }];
 }
-/* 发起微信支付 通过orderId*/
-- (void)lunchWechatPayWithOrderId:(NSString *)orderId viewController:(UIViewController *)vc
-{
-    YKWechatPayRequest *wechatApi = [[YKWechatPayRequest alloc] initWithOrderId:orderId];
-    [wechatApi startWithCompletionBlockWithSuccess:^(__kindof YTKBaseRequest * _Nonnull request) {
-         NSDictionary *result = [request.responseObject objectForKey:@"data"];
-        if ([WXApi isWXAppInstalled])
-        {
-            //调起微信支付
-            PayReq* req             = [[PayReq alloc] init];
-            req.openID              = [result objectForKey:@"appId"];
-            req.partnerId           = [result objectForKey:@"partnerId"];
-            req.prepayId            = [result objectForKey:@"prepayId"];
-            req.nonceStr            = [result objectForKey:@"nonceStr"];
-            req.timeStamp           = [[result objectForKey:@"timeStamp"] intValue];
-            req.package             = [result objectForKey:@"packageValue"];
-            req.sign                = [result objectForKey:@"sign"];
-            [WXApi sendReq:req];
-        } else
-        {
-            [self setupAlertController:vc];
-        }
-    } failure:^(__kindof YTKBaseRequest * _Nonnull request) {
-        NSLog(@"%@",request.error);
-    }];
-}
 
-/* 发起Paypal支付验证 通过orderId和PayPal回调返回的paypalId*/
-- (void)verifyPaypalWithPaypalId:(NSString *)paypalId orderId:(NSString *)orderId
-{
-    YKPaypalRequest *paypalApi = [[YKPaypalRequest alloc] initWithPaypalId:paypalId orderId:orderId];
-    
-    [paypalApi startWithCompletionBlockWithSuccess:^(__kindof YTKBaseRequest * _Nonnull request) {
-        
-        NSLog(@"%@",request.responseObject);
-        if ([[request.responseObject objectForKey:@"code"] intValue] == 0) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"提示" message:@"Paypal支付成功" delegate:self cancelButtonTitle:nil otherButtonTitles:@"确定",nil];
-                [alert show];
-            });
-        }
-        
-    } failure:^(__kindof YTKBaseRequest * _Nonnull request) {
-        
-        NSLog(@"%@",request.error);
-    }];
-}
-
+#pragma mark -- apple支付
 /* 发起AppleIAP支付验证 通过orderId和PayPal回调返回的paypalId
  * orderNumber 订单号
  * receiptData apple支付凭证 base64字符串

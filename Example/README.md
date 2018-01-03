@@ -4,14 +4,16 @@
 # 集成方式
 强烈建议使用cocoapods来集成，集成cocoapods请自行百度
 vim Podfile
+
 platform :ios, '8.0'
-pod 'IFreePlaySDK', '~> 1.1'
+pod 'IFreePlaySDK'
+
 pod install
-demo地址:https://github.com/zhengyachao/IFreePlaySdk.git
-demo中的Facebook登录和line登录均需要设置翻墙代理(建议下载蓝灯如果您有别的代理软件或者代理服务器更好)
+demo地址: https://github.com/zhengyachao/IFreePlaySdk.git
+demo中的Facebook登录均需要设置翻墙代理(建议下载蓝灯如果您有别的代理软件或者代理服务器更好)
 
 # 集成前准备
-需要到微信、Facebook、line、PayPal、Apple这些第三方的开发者中心申请注册相关的资料比如微信的appid AppSecret, facebook的应用编号等demo里面都已集成完毕。
+需要到微信、Facebook、PayPal、Apple这些第三方的开发者中心申请注册相关的资料比如微信的appid AppSecret, facebook的应用编号等demo里面都已集成完毕。
 需要在info.plist中加入我们已经申请好的资料将一下的代码粘贴到info.plist中（右键找到open AS->Source Code打开粘贴）
 <key>CFBundleURLTypes</key>
 <array>

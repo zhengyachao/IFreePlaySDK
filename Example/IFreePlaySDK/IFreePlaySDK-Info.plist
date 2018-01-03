@@ -25,16 +25,14 @@
 		<dict>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>fb1666665410020154</string>
+				<string>fb1939528269631692</string>
 			</array>
 		</dict>
 		<dict>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>line3rdp.$(PRODUCT_BUNDLE_IDENTIFIER)</string>
-			</array>
+			<array/>
 		</dict>
 		<dict>
 			<key>CFBundleTypeRole</key>
@@ -51,32 +49,20 @@
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>FacebookAppID</key>
-	<string>1666665410020154</string>
+	<string>1939528269631692</string>
 	<key>FacebookDisplayName</key>
 	<string>Airt­r­a­v­e­lers</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
-        <string>fbapi</string>
-        <string>fb-messenger-api</string>
-        <string>fbauth2</string>
-        <string>fbshareextension</string>
-		<string>lineauth</string>
-		<string>line3rdp.$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+		<string>fbapi</string>
+		<string>fb-messenger-api</string>
+		<string>fbauth2</string>
+		<string>fbshareextension</string>
 		<string>weixin</string>
 		<string>wechat</string>
-		<string>com.paypal.ppclient.touch.v1</string>
-		<string>com.paypal.ppclient.touch.v2</string>
-		<string>org-appextension-feature-password-management</string>
 	</array>
-    <key>NSPhotoLibraryUsageDescription</key>
-    <string>需要您的同意，才能访问相册。</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
-	<key>LineSDKConfig</key>
-	<dict>
-		<key>ChannelID</key>
-		<string>1523577735</string>
-	</dict>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
@@ -103,6 +89,8 @@
 			</dict>
 		</dict>
 	</dict>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>需要您的同意，才能访问相册。</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>
