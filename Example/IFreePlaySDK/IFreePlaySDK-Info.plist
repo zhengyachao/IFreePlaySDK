@@ -31,12 +31,6 @@
 		<dict>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
-			<key>CFBundleURLSchemes</key>
-			<array/>
-		</dict>
-		<dict>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
 			<key>CFBundleURLName</key>
 			<string>weixin</string>
 			<key>CFBundleURLSchemes</key>
@@ -51,7 +45,7 @@
 	<key>FacebookAppID</key>
 	<string>1939528269631692</string>
 	<key>FacebookDisplayName</key>
-	<string>Airt­r­a­v­e­lers</string>
+    <string>IFre­e­p­l­a­y­3­p­m­a­h­jong</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>fbapi</string>
@@ -60,6 +54,7 @@
 		<string>fbshareextension</string>
 		<string>weixin</string>
 		<string>wechat</string>
+        <string>whatsapp</string>
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>

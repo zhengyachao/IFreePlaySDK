@@ -2,15 +2,11 @@
 //  Created by ifreeplay on 2017/8/22.
 //  Copyright © 2017年 ifreeplay. All rights reserved.
 
-#import "GTMBase64.h"
+
 #import <IFreePlaySDK/YKSDKManager.h>
-#import <IFreePlaySDK/YKLoginRequest.h>
 #import "PayViewController.h"
-#import <StoreKit/StoreKit.h>
-#import <LocalAuthentication/LocalAuthentication.h>
 
-
-@interface PayViewController () <SKProductsRequestDelegate,SKPaymentTransactionObserver>
+@interface PayViewController ()
 
 @end
 
@@ -27,7 +23,6 @@
     self.view.backgroundColor = [UIColor whiteColor];
     
     [self createApplePayButton];
-    [[SKPaymentQueue defaultQueue] addTransactionObserver:self];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -52,16 +47,10 @@
 
 - (void)_onApplePayButton:(UIButton *)button
 {
-    // 检测是否允许内购
-    if([SKPaymentQueue canMakePayments])
-    {
-        [self requestProductData:@"com.ifreeplay.airtravelers_roomcard1"];
-    }else
-    {
-        NSLog(@"不允许程序内付费");
-    }
+    [[YKSDKManager shareManager] buyWithProductId:@"ifreeplay3pmahjong.roomcard1" orderId:self.orderId];
 }
 
+/*
 - (void)requestProductData:(NSString *)type
 {
     NSArray *product = [[NSArray alloc] initWithObjects:type, nil];
@@ -176,5 +165,6 @@
     // 移除监听
     [[SKPaymentQueue defaultQueue] removeTransactionObserver:self];
 }
+*/
 
 @end

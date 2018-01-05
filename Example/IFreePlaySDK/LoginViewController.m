@@ -9,13 +9,16 @@
 #import <IFreePlaySDK/YKSDKManager.h>
 #import <IFreePlaySDK/YKUtilsMacro.h>
 
-@interface LoginViewController ()
+@interface LoginViewController ()<UIDocumentInteractionControllerDelegate>
 {
     NSString *_userID;
     NSString *_userName;
     NSString *_userMail;
     NSString *_userHeadUrl;
 }
+
+@property (nonatomic, retain) UIDocumentInteractionController * documentInteractionController;
+
 @end
 
 @implementation LoginViewController
@@ -29,6 +32,7 @@
     [self createFBInvitedButton];
     [self createWechatLoginButton];
     [self createWechatShareButton];
+    [self createWhatsappShareButton];
     [self createProductListButton];
 }
 
@@ -105,6 +109,19 @@
     wxBtn.layer.cornerRadius = 5.0f;
     
     [self.view addSubview:wxBtn];
+}
+
+- (void)createWhatsappShareButton {
+    UIButton *whatsappBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    whatsappBtn.frame = CGRectMake(20, 10 * 6 + 44 * 5, self.view.frame.size.width - 40, 44);
+    whatsappBtn.backgroundColor = [UIColor colorWithRed:255/255.0 green:143/255.0 blue:22/255.0 alpha:1.0];
+    [whatsappBtn setTitle:@"whatsapp分享按钮" forState:UIControlStateNormal];
+    [whatsappBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    whatsappBtn.titleLabel.font = [UIFont systemFontOfSize:16.0f];
+    [whatsappBtn addTarget:self action:@selector(_onShareWhatsapp:) forControlEvents:UIControlEventTouchUpInside];
+    whatsappBtn.layer.cornerRadius = 5.0f;
+    
+    [self.view addSubview:whatsappBtn];
 }
 
 - (void)createProductListButton
@@ -213,11 +230,29 @@
                                                     }];
 }
 
+#pragma mark -- WhatsApp分享
+- (void)_onShareWhatsapp:(UIButton *)button {
+    // 本地图片转data
+    /*分享图片的时候 如果碰到whatsapptmp image exclusive 应该是网络问题 */
+    // NSData *data = UIImageJPEGRepresentation([UIImage imageNamed:@"image"], 1.0);
+    // 网络图片转data
+//    NSData *netData = [NSData dataWithContentsOfURL:[NSURL URLWithString: @"http://leapkids-dev.oss-cn-beijing.aliyuncs.com/course/cover/4779401786cd45de94d032f105642ce5.jpg?x-oss-process=style/150_150"]];
+    // [[YKSDKManager shareManager] sendImage:data view:self.view];
+//    [[YKSDKManager shareManager] sendImage:netData view:self.view];
+    /*
+     // 文本分享  测试的时候可以打开
+    [[YKSDKManager shareManager] sendText:@"Hello--Whatsapp"];
+     // 链接分享  测试的时候可以打开
+     */
+    [[YKSDKManager shareManager] sendLinkUrl:@"https://d3uu10x6fsg06w.cloudfront.net/shareitexampleapp/liking/index.html"];
+}
+
 - (void)_onJumpProductVC:(UIButton *)button
 {
     IFProductListViewController *productVC = [[IFProductListViewController alloc] init];
     [self.navigationController pushViewController:productVC animated:YES];
 }
+
 #pragma mark -- UIAlertController
 /* 展示不同类型的登录得到的回调详细信息 */
 - (void)showCallbackInfoData:(NSString *)loginType dataResult:(NSDictionary *)dataResult

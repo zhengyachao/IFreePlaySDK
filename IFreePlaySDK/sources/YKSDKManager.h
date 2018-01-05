@@ -8,7 +8,9 @@
 
 
 #import <UIKit/UIKit.h>
+#import <StoreKit/StoreKit.h>
 #import <Foundation/Foundation.h>
+#import <StoreKit/SKPaymentTransaction.h>
 
 // 三方登录的平台类型
 typedef enum
@@ -152,13 +154,17 @@ typedef void (^YKShareStateChangedHandler)(YKResponseState state, NSError *error
                          currentVc:(UIViewController *)vc
                            handler:(YKShareStateChangedHandler)stateChangedHandler;
 
-#pragma mark -- Apple支付
+#pragma mark -- Whatsapp分享文本&图片&link链接
+/* 分享文本 */
+- (void)sendText:(NSString*)message;
+/* 分享图片 */
+- (void)sendImage:(NSData *)data view:(UIView *)view;
+/* 分享链接 */
+- (void)sendLinkUrl:(NSString*)linkUrl;
 
-/* 发起AppleIAP支付验证 通过orderId和PayPal回调返回的paypalId
- * orderId 订单号
- * receiptData apple支付凭证 base64字符串
- * verifyEnvironment 环境 如果是沙箱传Sandbox 如果是正式环境传Live
- */
-- (void)verifyAppleIAPWithOrderId:(NSString *)orderId receiptData:(NSString *)receiptData verifyEnvironment:(NSString *)verifyEnvironment;
+#pragma mark -- Apple支付
+// 发起购买
+-(void)buyWithProductId:(NSString*)productId orderId:(NSString *)orderId;
+
 
 @end

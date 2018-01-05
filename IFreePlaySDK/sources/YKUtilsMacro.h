@@ -17,7 +17,7 @@
 #define kPaypalClientID  @"ATdJEC70AgF4ae_jIaK8WiVMzxBiarr-Whf1dJMAWbGm8IVQG57o28GA_5hLKvNFIH9vIoPqG13MLQ8T"
 
 /* 测试域名 */
-#define kIFBaseUrl     @"http://192.168.0.103:8081"
+#define kIFBaseUrl     @"http://192.168.31.113:8081"
 /* 根据微信返回的code获取accessToken和openId接口 */
 #define kWechatGetToken                       @"https://api.weixin.qq.com/sns/oauth2/access_token?appid=%@&secret=%@&code=%@&grant_type=authorization_code"
 /* 根据微信返回的accessToken和openId来获取用户信息接口 */

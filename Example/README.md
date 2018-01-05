@@ -1,5 +1,5 @@
 # IFreePlaySDK
-包括微信、Facebook、line登录，Paypal、微信，Apple内购支付等功能。
+包括微信、Facebook登录&分享，Apple内购支付等功能。
 
 # 集成方式
 强烈建议使用cocoapods来集成，集成cocoapods请自行百度

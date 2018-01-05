@@ -11,15 +11,23 @@
 #import "YKSDKManager.h"
 #import "YKUtilsMacro.h"
 #import "YKLoginRequest.h"
+#import "GTMBase64.h"
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
 #import <FBSDKLoginKit/FBSDKLoginKit.h>
 #import <FBSDKShareKit/FBSDKShareKit.h>
 
-@interface YKSDKManager ()<WXApiDelegate,FBSDKSharingDelegate,FBSDKAppInviteDialogDelegate>
+// Whatsapp URLs
+NSString *const whatsAppUrl = @"whatsapp://app";
+NSString *const whatsAppSendTextUrl = @"whatsapp://send?text=";
+
+@interface YKSDKManager ()<WXApiDelegate,FBSDKSharingDelegate,FBSDKAppInviteDialogDelegate,UIDocumentInteractionControllerDelegate,SKProductsRequestDelegate,SKPaymentTransactionObserver>
 {
+    UIDocumentInteractionController *_docControll;
     NSString *_gameId;
     NSString *_type;
+    NSString *_orderId;
 }
+@property(nonatomic,weak) SKPaymentQueue *paymentQueue;
 
 @property (nonatomic, copy) void(^successBlock)(NSDictionary *data);
 @property (nonatomic, copy) void(^failureBlock)(NSError *error);
@@ -318,6 +326,95 @@
     [WXApi sendReq:req];
 }
 
+#pragma mark -- Whatsapp
+/* 判断用户是否安装whatsapp */
+- (BOOL)isWhatsAppInstalled
+{
+    return [[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:whatsAppUrl]];
+}
+
+- (void)sendText:(NSString *)message
+{
+    NSString *urlWhats = [NSString stringWithFormat:@"%@%@",whatsAppSendTextUrl,message];
+    NSCharacterSet *set = [NSCharacterSet URLQueryAllowedCharacterSet];
+    urlWhats = [urlWhats stringByAddingPercentEncodingWithAllowedCharacters:set];
+    NSURL *whatsappURL = [NSURL URLWithString:urlWhats];
+    
+    if ( [self isWhatsAppInstalled] ) {
+        [[UIApplication sharedApplication] openURL: whatsappURL];
+    } else {
+        [self alertWithTitle:@"Your device has no WhatsApp installed" message:message];
+    }
+}
+
+/* 分享图片 */
+- (void)sendImage:(NSData *)data view:(UIView *)view{
+    
+    NSURL *tempFile    = [self createTempFile:data type:@"whatsAppTmp.wai"];
+    _docControll = [UIDocumentInteractionController interactionControllerWithURL:tempFile];
+    _docControll.UTI = @"net.whatsapp.image";
+    _docControll.delegate = self;
+    
+    [_docControll presentOpenInMenuFromRect:CGRectZero
+                                     inView:view
+                                   animated:YES];
+}
+
+/* 分享链接 */
+- (void)sendLinkUrl:(NSString*)linkUrl {
+
+    linkUrl = (NSString*)CFBridgingRelease(CFURLCreateStringByAddingPercentEscapes(NULL,(CFStringRef) linkUrl, NULL,CFSTR("!*'();:@&=+$,/?%#[]"),kCFStringEncodingUTF8));
+    
+    NSString * urlWhats = [NSString stringWithFormat:@"%@%@",whatsAppSendTextUrl,linkUrl];
+    NSURL * whatsappURL = [NSURL URLWithString:urlWhats];
+    
+    if ( [self isWhatsAppInstalled] ) {
+        [[UIApplication sharedApplication] openURL: whatsappURL];
+    } else {
+        [self alertWithTitle:@"Your device has no WhatsApp installed" message:nil];
+    }
+}
+
+- (NSURL *)createTempFile:(NSData *)data type:(NSString *)type
+{
+    NSError *error = nil;
+    NSURL *tempFile = [[NSFileManager defaultManager] URLForDirectory:NSDocumentDirectory
+                                                             inDomain:NSUserDomainMask
+                                                    appropriateForURL:nil
+                                                               create:NO
+                                                                error:&error];
+    
+    if (tempFile)
+    {
+        tempFile = [tempFile URLByAppendingPathComponent:type];
+    } else {
+        [self alertWithTitle:[NSString stringWithFormat:@"Error getting document directory: %@", error] message:nil];
+    }
+    
+    if (![data writeToURL:tempFile options:NSDataWritingAtomic error:&error]){
+        [self alertWithTitle:[NSString stringWithFormat:@"Error writing File: %@", error] message:nil];
+    }
+    
+    return tempFile;
+}
+
+- (void)alertWithTitle:(NSString *)title message:(NSString *)message
+{
+    UIViewController *vc = [[[[UIApplication sharedApplication] delegate] window] rootViewController];
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:title
+                                                                   message:message
+                                                            preferredStyle:UIAlertControllerStyleAlert];
+    
+    [alert addAction:[UIAlertAction actionWithTitle:@"OK"
+                                              style:UIAlertActionStyleCancel
+                                            handler:^(UIAlertAction *action) {
+                                                
+                                                [vc dismissViewControllerAnimated:YES completion:^{}];
+                                            }]];
+    
+    [vc presentViewController:alert animated:YES completion:nil];
+}
+
 #pragma mark -- 网络请求
 - (void)getWechatAccessTokenWithCode:(NSString *)code
 {
@@ -395,6 +492,122 @@
 }
 
 #pragma mark -- apple支付
+
+-(void)setup
+{
+    _paymentQueue = [SKPaymentQueue defaultQueue];
+    //监听SKPayment过程
+    [_paymentQueue addTransactionObserver:self];
+    NSLog(@"YKSDKManager 开启交易监听");
+}
+
+-(void)dealloc
+{
+    //解除监听
+    [_paymentQueue removeTransactionObserver:self];
+    _paymentQueue = nil;
+    NSLog(@"YKSDKManager 注销交易监听");
+}
+
+-(BOOL)canMakePayments
+{
+    return [SKPaymentQueue canMakePayments];
+}
+
+-(void)buyWithProductId:(NSString*)productId orderId:(NSString *)orderId
+{
+    if([self canMakePayments])
+    {
+        _orderId = orderId;
+        [self setup];
+        [self requestProduct:productId];
+    }
+    else
+    {
+       [self alertWithTitle:@"提示" message:@"不支持内购"];
+    }
+}
+
+-(void)requestProduct:(NSString*)productId
+{
+    NSArray *product = [[NSArray alloc] initWithObjects:productId,nil];
+    NSSet *nsset = [NSSet setWithArray:product];
+    SKProductsRequest *request =[[SKProductsRequest alloc] initWithProductIdentifiers: nsset];
+    request.delegate = self;
+    [request start];
+}
+
+#pragma mark - SKProductsRequestDelegate
+- (void)productsRequest:(SKProductsRequest *)request didReceiveResponse:(SKProductsResponse *)response
+{
+    NSArray *productArray = response.products;
+    if([productArray count] == 0)
+    {
+        NSLog(@"没有这个商品");
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"提示" message:@"没有这个商品" delegate:self cancelButtonTitle:nil otherButtonTitles:@"确定",nil];
+        [alert show];
+        return;
+    }
+    
+    if(productArray != nil && productArray.count>0)
+    {
+        SKProduct *product = [productArray objectAtIndex:0];
+        NSLog(@"SKProduct 描述信息%@", [product description]);
+        NSLog(@"产品标题 %@" , product.localizedTitle);
+        NSLog(@"产品描述信息: %@" , product.localizedDescription);
+        NSLog(@"价格: %@" , product.price);
+        NSLog(@"Product id: %@" , product.productIdentifier);
+        
+        SKPayment* payment = [SKPayment paymentWithProduct:product];
+        [_paymentQueue addPayment:payment];
+    }
+}
+
+#pragma mark - SKPaymentTransactionObserver
+- (void)paymentQueue:(SKPaymentQueue *)queue updatedTransactions:(NSArray *)transactions
+{
+    for(SKPaymentTransaction* transaction in transactions)
+    {
+        NSLog(@"%@",transaction.payment.productIdentifier);
+        switch (transaction.transactionState)
+        {
+            case SKPaymentTransactionStatePurchased:
+                [self completeTransaction:transaction];
+                break;
+            case SKPaymentTransactionStatePurchasing:
+                NSLog(@"商品添加进列表");
+                break;
+            case SKPaymentTransactionStateRestored:
+                NSLog(@"已经购买过商品");
+                break;
+            case SKPaymentTransactionStateFailed:
+                {
+                    if (transaction.error.code != SKErrorPaymentCancelled)
+                    {
+                        NSLog(@"Transaction error: %@", transaction.error.localizedDescription);
+                    }
+                    
+                    [[SKPaymentQueue defaultQueue] finishTransaction: transaction];
+                }
+                break;
+                
+            default:
+                break;
+        }
+    }
+}
+
+//交易结束
+- (void)completeTransaction:(SKPaymentTransaction *)transaction
+{
+    NSLog(@"交易结束");
+    NSData *data = [NSData dataWithContentsOfFile:[[[NSBundle mainBundle] appStoreReceiptURL] path]];
+    NSString *receiptData = [[NSString alloc] initWithData:[GTMBase64 encodeData:data] encoding:NSUTF8StringEncoding];
+    NSLog(@"%@",receiptData);
+    [self verifyAppleIAPWithOrderId:_orderId receiptData:receiptData verifyEnvironment:@"Sandbox"];
+    [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
+}
+
 /* 发起AppleIAP支付验证 通过orderId和PayPal回调返回的paypalId
  * orderNumber 订单号
  * receiptData apple支付凭证 base64字符串

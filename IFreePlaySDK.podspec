@@ -1,7 +1,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'IFreePlaySDK'
-  s.version          = '1.2.3'
+  s.version          = '1.3.0'
   s.summary          = '集成facebook登录/分享／邀请，微信登录／分享，苹果IAP内购支付并打包成静态库'
 
   s.description      = <<-DESC
@@ -12,7 +12,7 @@ TODO: 集成facebook登录/分享／邀请，微信登录／分享，苹果IAP�
 
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { 'zhengyachao' => '15038253754@163.com' }
-  s.source           = { :git => 'https://github.com/zhengyachao/IFreePlaySDK.git', :tag => '1.2.3' }
+  s.source           = { :git => 'https://github.com/zhengyachao/IFreePlaySDK.git', :tag => '1.3.0' }
 
   s.platform     = :ios, '8.0'
   s.requires_arc = true
